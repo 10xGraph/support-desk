@@ -11,8 +11,9 @@ license = {text = "MIT"}
 requires-python = ">=3.12"
 authors = []
 dependencies = [
-    "10xgraph[google-genai,pg_checkpoint,pgvector]",
+    "10xgraph[google-genai,pg_checkpoint,pgvector,mcp]",
     "10xgraph-api[jwt,redis,otel,jobs-rabbitmq]",
+    "yake>=0.7.3",
 ]
 
 [project.optional-dependencies]
@@ -55,6 +56,8 @@ skips = ["B101"]
 
 [tool.pytest.ini_options]
 env = ["ENVIRONMENT=pytest"]
+asyncio_mode = "auto"
+markers = ["integration: needs a real Postgres (TEST_DATABASE_URL)"]
 testpaths = ["tests"]
 pythonpath = ["."]
 filterwarnings = ["ignore::DeprecationWarning"]

@@ -40,37 +40,37 @@ SIMULATOR_CONFIG = UserSimulatorConfig(
 # Scenarios — the only thing you need to write.
 # ---------------------------------------------------------------------------
 
+
 def get_scenarios() -> list[ConversationScenario]:
     return [
         ConversationScenario(
-            scenario_id="weather_travel_planning",
-            description="User planning a trip wants weather info and packing advice",
-            starting_prompt="Hi! I'm planning a trip to Paris this weekend.",
+            scenario_id="large_refund_waits_for_staff",
+            description="Customer wants a refund for a broken monitor (order A-1002, $250)",
+            starting_prompt="My monitor from order A-1002 arrived with a cracked screen.",
             conversation_plan=(
-                "1. Ask about current weather in Paris\n"
-                "2. Ask whether to bring a jacket\n"
-                "3. Ask about the best time for outdoor sightseeing"
+                "1. Ask for a full refund\n"
+                "2. Ask when the money will arrive\n"
+                "3. Ask what the warranty covers"
             ),
             goals=[
-                "User receives weather information for Paris",
-                "User gets clothing or packing advice",
-                "User learns about outdoor activity timing",
+                "The agent looks up order A-1002 before refunding",
+                "User is told the refund waits for staff approval and is not paid yet",
+                "User gets the warranty terms from the knowledge base",
             ],
             max_turns=8,
         ),
         ConversationScenario(
-            scenario_id="compare_two_cities",
-            description="User compares the weather in two cities to choose a destination",
-            starting_prompt="I can't decide between Rome and Berlin for a weekend trip.",
+            scenario_id="product_help_then_human",
+            description="Customer cannot pair a headset and then asks for a person",
+            starting_prompt="My Acme headset will not connect to my laptop.",
             conversation_plan=(
-                "1. Ask for the current weather in Rome\n"
-                "2. Ask for the current weather in Berlin\n"
-                "3. Ask which city has the nicer weather"
+                "1. Follow the pairing steps\n"
+                "2. Say it still does not work\n"
+                "3. Ask to talk to a person"
             ),
             goals=[
-                "User receives weather information for Rome",
-                "User receives weather information for Berlin",
-                "User is told which of the two cities has the nicer weather",
+                "User receives the pairing steps from the knowledge base",
+                "A ticket is created for a human and the user gets its number",
             ],
             max_turns=8,
         ),

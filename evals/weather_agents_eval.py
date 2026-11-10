@@ -39,8 +39,10 @@ def get_eval_config() -> EvalConfig:
 
 
 def get_eval_set() -> EvalSet:
+    """Needs demo_server running and a run config with a user of company acme: demo_server
+    refuses MCP calls without a customer identity."""
     return (
-        EvalSetBuilder(name="weather-agent-regression")
+        EvalSetBuilder(name="support-agent-regression")
         .add_case(
             query="Hi",
             expected="Hello! How can I help you today?",
@@ -49,25 +51,25 @@ def get_eval_set() -> EvalSet:
             description="The agent responds to a greeting.",
         )
         .add_tool_test(
-            query="What is the weather in London?",
-            tool_name="get_weather",
-            tool_args={"location": "London"},
-            expected_response="The weather in London is cloudy, 14C.",
-            case_id="weather_london",
+            query="What is the status of order A-1001?",
+            tool_name="lookup_order",
+            tool_args={"order_id": "A-1001"},
+            expected_response="Order A-1001: Wireless headset, $45.00, delivered.",
+            case_id="lookup_order",
         )
         .add_tool_test(
-            query="Tell me the current weather in New York",
-            tool_name="get_weather",
-            tool_args={"location": "New York"},
-            expected_response="The weather in New York is partly cloudy, 18C.",
-            case_id="weather_new_york",
+            query="Please refund order A-1001 in full, the headset stopped working.",
+            tool_name="refund_order",
+            tool_args={"order_id": "A-1001", "amount": 45.0},
+            expected_response="Refund of $45.00 for order A-1001 issued.",
+            case_id="small_refund",
         )
         .add_tool_test(
-            query="How is the weather in Tokyo today?",
-            tool_name="get_weather",
-            tool_args={"location": "Tokyo"},
-            expected_response="The weather in Tokyo is sunny, 24C.",
-            case_id="weather_tokyo",
+            query="I want to talk to a person.",
+            tool_name="create_ticket",
+            tool_args={"needs_human": True},
+            expected_response="I have opened a ticket for you.",
+            case_id="human_ticket",
         )
         .build()
     )

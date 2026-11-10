@@ -2,7 +2,10 @@
   "agent": "graph.agent:app",
   "env": ".env",
   "auth": {
-    "method": "jwt"
+    "method": "jwt",
+    "tenant_claims": [
+      "org_id"
+    ]
   },
   "thread_name_generator": "graph.thread_name_generator:MyNameGenerator",
   "ag_ui": {

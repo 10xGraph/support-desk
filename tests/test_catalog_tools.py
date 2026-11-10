@@ -1,55 +1,46 @@
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+import importlib.util
+from pathlib import Path
 
-from graph.state import WeatherState
-from graph.tools.weather_tool import get_weather
+from tenxgraph.core.authz import Reach
+from tenxgraph.storage.store import system_user_id
 
-
-def test_get_weather_returns_sunny_message_for_location() -> None:
-    with patch(
-        "graph.tools.weather_tool.call_weather_api", return_value="The weather in London is sunny"
-    ):
-        result = get_weather(location="London")
-
-    assert "London" in result
-    assert "sunny" in result
+from graph.agent import KB_AGENT_ID, KB_CATEGORY, KB_COLLECTION
 
 
-def test_get_weather_retries_on_failure_and_returns_error_after_max_attempts() -> None:
-    with patch("graph.tools.weather_tool.call_weather_api", side_effect=Exception("API error")):
-        result = get_weather(location="Paris")
-
-    assert "Paris" in result
-    assert "sorry" in result.lower()
+_SCRIPT = Path(__file__).resolve().parents[1] / "deploy" / "scripts" / "seed_knowledge_base.py"
+_spec = importlib.util.spec_from_file_location("seed_knowledge_base", _SCRIPT)
+seed_kb = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(seed_kb)
 
 
-def test_get_weather_emits_progress_events_when_emitter_is_provided() -> None:
-    emit = MagicMock()
+class RecordingStore:
+    def __init__(self) -> None:
+        self.calls: list[tuple[dict, str, dict]] = []
 
-    with patch(
-        "graph.tools.weather_tool.call_weather_api", return_value="The weather in Tokyo is sunny"
-    ):
-        result = get_weather(location="Tokyo", emit=emit)
-
-    emit.progress.assert_called()
-    assert "Tokyo" in result
+    async def astore(self, config, content, **kwargs) -> str:
+        self.calls.append((config, content, kwargs))
+        return "id"
 
 
-def test_get_weather_accepts_injected_tool_call_id_and_state() -> None:
-    state = WeatherState()
+async def test_seeds_every_company() -> None:
+    store = RecordingStore()
+    count = await seed_kb.seed(store)
 
-    with patch(
-        "graph.tools.weather_tool.call_weather_api", return_value="The weather in Berlin is sunny"
-    ):
-        result = get_weather(location="Berlin", tool_call_id="call_1", state=state)
-
-    assert "Berlin" in result
+    assert count == sum(len(a) for a in seed_kb.KNOWLEDGE_BASE.values())
+    orgs = {config["user"].tenant["org_id"] for config, _, _ in store.calls}
+    assert orgs == set(seed_kb.KNOWLEDGE_BASE)
 
 
-def test_weather_is_deterministic_and_differs_between_cities() -> None:
-    from graph.tools.weather_tool import _weather_for
+async def test_articles_land_where_the_agent_searches() -> None:
+    store = RecordingStore()
+    await seed_kb.seed(store)
 
-    assert _weather_for("Rome") == _weather_for("rome ")
-    assert _weather_for("Rome") != _weather_for("Berlin")
-    assert _weather_for("Atlantis") == _weather_for("Atlantis")
+    for config, content, kwargs in store.calls:
+        org_id = config["user"].tenant["org_id"]
+        assert config["user"].user_id == system_user_id(KB_AGENT_ID)
+        assert config["user"].reach == Reach.OWN
+        assert config["collection"] == KB_COLLECTION
+        assert kwargs["category"] == KB_CATEGORY
+        assert seed_kb.KNOWLEDGE_BASE[org_id][kwargs["memory_key"]] == content

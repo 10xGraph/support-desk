@@ -1,0 +1,98 @@
+# CLI Commands
+
+Use this when changing `10xgraph-api` command behavior, generated files, or deployment scaffolding.
+
+## Package
+
+Install:
+
+```bash
+pip install 10xgraph-api
+```
+
+Entry point:
+
+```text
+10xgraph = tenxgraph_api.cli.main:main
+agentflow = tenxgraph_api.cli.main:legacy_main   # deprecated alias, removed in 2.0
+```
+
+## Commands
+
+`10xgraph init`
+
+- Scaffolds `10xgraph.json`, `graph/agent.py` and `.env.example`, and suggests `10xgraph skills` as a next step.
+- Asks three questions: agent name, template (quick-start or production) and AI provider (Google, OpenAI, Anthropic). Nothing else is asked.
+- Quick-start writes a minimal `10xgraph.json` (no `cache_store`: in-memory, no rate limit, no token revocation).
+- Production writes the recommended setup without asking: `"auth": {"method": "jwt"}` (default roles: all permissions except `admin:*`, reach `own`; add `auth.roles` to narrow), `"id_generator": "uuid"`, and `"cache_store": {"type": "redis", "rate_limit": {...100 requests / 60 s by user, "fail_open": false...}, "token_revocation": true}` (no `url`, so it reads `REDIS_URL`). WebSocket and AG-UI stay off.
+- The summary table shows what was written; the next steps point to `10xgraph config` for WebSocket, AG-UI, ID generator, thread naming and every other setting.
+- Options (overrides for scripts): `--path/-p`, `--force/-f`, `--name`, `--template` (quick-start|production), `--provider` (google|openai|anthropic), `--auth` (none|jwt|custom), `--cache-store` (memory|redis), `--rate-limit/--no-rate-limit`, `--token-revocation/--no-token-revocation` (ignored with `--auth none`), `--websocket/--no-websocket` (default off), `--yes/-y`, `--non-interactive`, `--dry-run`.
+- Production adds `pyproject.toml` (dependencies follow the answers, e.g. `10xgraph[openai]`, `10xgraph-api[jwt,redis,websocket]`), `.pre-commit-config.yaml`, `tests/` and `evals/`.
+
+`10xgraph dev`
+
+- Starts the local development server (Uvicorn, reload on) for a compiled graph and opens the hosted playground when it is ready.
+- Options include `--config/-c`, `--host/-H`, `--port/-p`, `--reload/--no-reload`, `--open/--no-open`, `--verbose/-v`, and `--quiet/-q`.
+- Defaults are config `10xgraph.json`, host `127.0.0.1`, port `8000`, reload on, playground opened. `--no-open` serves only.
+- There is no `10xgraph api` or `10xgraph play`; both were replaced by `dev`. Production runs Gunicorn in the image from `10xgraph build`.
+
+`10xgraph build`
+
+- Generates Docker deployment files.
+- Options include `--output/-o`, `--force/-f`, `--python-version`, `--port/-p`, `--docker-compose/--no-docker-compose`, `--service-name`, `--verbose/-v`, and `--quiet/-q`.
+
+`10xgraph skills`
+
+- Installs the bundled 10xGraph skill (an Agent Skills spec folder: `SKILL.md` + `references/`) into an agent-specific project directory. Every agent gets the same folder; paths inside it are relative to the skill directory.
+- Prompts for the target agent when `--agent` is omitted:
+  - `1` / `codex`: `.agents/skills/10xgraph`
+  - `2` / `claude`: `.claude/skills/10xgraph`
+  - `3` / `github`: `.github/instructions/10xgraph.instructions.md` and `.github/skills/10xgraph`
+- Options include `--agent/-a`, `--path/-p`, `--force/-f`, `--all`, `--list/-l`, `--verbose/-v`, and `--quiet/-q`.
+- `--validate PATH` (repeatable) checks a skill directory, or a folder of skill directories, against the Agent Skills specification (https://agentskills.io/specification) and exits non-zero on errors. Nothing is installed.
+- Source templates: https://github.com/10xGraph/10xgraph-api/tree/main/tenxgraph_api/cli/templates/skills
+
+`10xgraph eval [TARGET]`
+
+- Runs agent evaluations: discovers `*_eval.py` and `eval_*.py` files in `TARGET` (default `evals/`) and runs their cases.
+- Options include `--output/-o` (default `eval_reports`), `--no-report`, `--threshold/-t` (fail below this pass rate), `--parallel/-p`, `--max-concurrency/-c` (default 4), `--verbose/-v`, and `--quiet/-q`. Writes JSON and HTML reports and opens the HTML report in the browser at an interactive terminal; `--open/--no-open` (or `evaluation.open_report` in `10xgraph.json`) controls it.
+
+`10xgraph test [PATH]`
+
+- Runs the project tests with pytest and returns the pytest exit code. Arguments after `--` are forwarded to pytest.
+- Options include `--coverage/-C`, `--html` (needs `--coverage`), `-k`, `--verbose/-v`, and `--quiet/-q`.
+
+`10xgraph audit`
+
+- Read-only environment check: Python version, installed packages, core evaluation API, `10xgraph.json` validity and whether the default port is free. Exits non-zero if a check fails, so it works as a CI gate.
+- Options include `--config/-c`, `--verbose/-v`, and `--quiet/-q`.
+
+`10xgraph config`
+
+- Opens a browser UI to edit and validate `10xgraph.json` (created on first save). The one place for every server setting.
+- Sidebar: Get running (Core); Before production: Authentication, Authorization, Cache store (rate limiting, token revocation), Observability; Runs and streaming: Runs, WebSocket, AG-UI, Remote tools, Media; Project wiring: Checkpointer, ID generation, Thread naming, Memory store, Dependency injection; Developer tools: Test, Evaluation.
+- The Cache store page picks the store type (Memory, Redis with an optional URL, Custom `module:attr`), then has Rate limiting and Token revocation tabs with their on/off switches.
+- Options include `--config/-c`, `--port/-p` (default: any free port), and `--open/--no-open`.
+
+`10xgraph demo`
+
+- Previews terminal animations without touching the project. Option: `--style` (`all`, `typing`, `network`, `init`, `build`, `eval`).
+
+`10xgraph version`
+
+- Prints CLI and library version information.
+
+## Rules
+
+- Use docs package names in user-facing text.
+- Keep command options aligned with https://10xgraph.com/
+- If command defaults change, update docs, templates, and tests together.
+- Generated skill templates live under https://github.com/10xGraph/10xgraph-api/tree/main/tenxgraph_api/cli/templates/skills
+
+## Source Map
+
+- CLI main: https://github.com/10xGraph/10xgraph-api/blob/main/tenxgraph_api/cli/main.py
+- Commands: https://github.com/10xGraph/10xgraph-api/tree/main/tenxgraph_api/cli/commands
+- CLI config/output/validation: https://github.com/10xGraph/10xgraph-api/tree/main/tenxgraph_api/cli/core
+- Templates: https://github.com/10xGraph/10xgraph-api/tree/main/tenxgraph_api/cli/templates
+- Docs: https://10xgraph.com/
