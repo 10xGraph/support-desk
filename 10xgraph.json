@@ -5,19 +5,52 @@
     "method": "jwt",
     "tenant_claims": [
       "org_id"
-    ]
+    ],
+    "default_role": "member",
+    "roles": {
+      "member": {
+        "permissions": [
+          "graph:invoke",
+          "graph:stream",
+          "graph:stop",
+          "threads:*",
+          "files:*"
+        ],
+        "reach": "own"
+      },
+      "support": {
+        "inherits": [
+          "member"
+        ],
+        "permissions": [
+          "threads:read",
+          "files:read"
+        ],
+        "reach": "tenant"
+      },
+      "org_admin": {
+        "inherits": [
+          "support"
+        ],
+        "permissions": [
+          "threads:delete",
+          "files:delete",
+          "graph:read",
+          "graph:fix"
+        ],
+        "reach": "tenant"
+      },
+      "admin": {
+        "permissions": [
+          "*"
+        ],
+        "reach": "all"
+      }
+    }
   },
-  "thread_name_generator": "graph.thread_name_generator:MyNameGenerator",
-  "ag_ui": {
-    "enabled": false,
-    "allow_client_tools": false
-  },
-  "websocket": {
-    "enabled": false
-  },
-  "remote_tools": [],
   "injectq": "graph.agent:container",
   "store": "graph.agent:store",
+  "thread_name_generator": "graph.thread_name_generator:MyNameGenerator",
   "id_generator": "uuid",
   "cache_store": {
     "type": "redis",
@@ -37,6 +70,17 @@
     },
     "token_revocation": true
   },
+  "observability": {
+    "level": "standard",
+    "phoenix": {
+      "enabled": true,
+      "project": "support-desk"
+    }
+  },
+  "metrics": {
+    "enabled": true,
+    "export": "otlp"
+  },
   "audit": {
     "enabled": true,
     "sinks": [
@@ -53,6 +97,14 @@
       "worker.tasks"
     ]
   },
+  "ag_ui": {
+    "enabled": false,
+    "allow_client_tools": false
+  },
+  "websocket": {
+    "enabled": false
+  },
+  "remote_tools": [],
   "test": {
     "path": "tests",
     "coverage": true,

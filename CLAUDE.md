@@ -32,7 +32,8 @@ One support agent for two demo companies (`acme`, `globex`, JWT claim `org_id`).
 - `deploy/scripts/seed_knowledge_base.py`: loads the knowledge base for every company. It runs
   at stack start, before the API; it is seed data, not an agent tool or a worker task.
 - `evals/`: agent evaluations (`10xgraph eval`, real model, real demo_server). Every case
-  runs as a signed-in customer (`session_input.config["user"]`). Evaluations never go in
+  runs as a signed-in customer from `evals/customers.py` (cases: `session_input=`, scenarios:
+  `config={"user": ...}`). Evaluations never go in
   `tests/`; `tests/` is fast unit tests with no LLM.
 - `worker/tasks.py`: background jobs (the template's for now), not the knowledge base.
 - `demo_server/`: the company's systems (orders, refunds, tickets in Postgres schema `demo`),

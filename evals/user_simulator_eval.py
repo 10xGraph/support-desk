@@ -12,13 +12,13 @@ Usage:
     10xgraph eval evals/user_simulator_eval.py
     10xgraph eval evals/user_simulator_eval.py --parallel --max-concurrency 4
 
-Known gap: `10xgraph eval` runs scenarios without a run config, so there is no signed-in
-customer. demo_server then refuses every tool call and these goals cannot be met. Until a
-scenario can carry the customer (config["user"]), use evals/support_agent_eval.py, whose cases
-do.
+Each scenario runs as a signed-in customer (config={"user": ...}, evals/customers.py), like a
+real chat through the API. Needs the stack running and GOOGLE_API_KEY.
 """
 
 from tenxgraph.qa.evaluation import ConversationScenario, UserSimulatorConfig
+
+from evals.customers import ALICE
 
 
 # ---------------------------------------------------------------------------
@@ -64,6 +64,7 @@ def get_scenarios() -> list[ConversationScenario]:
                 "User gets the warranty terms from the knowledge base",
             ],
             max_turns=8,
+            config={"user": ALICE},
         ),
         ConversationScenario(
             scenario_id="product_help_then_human",
@@ -79,5 +80,6 @@ def get_scenarios() -> list[ConversationScenario]:
                 "A ticket is created for a human and the user gets its number",
             ],
             max_turns=8,
+            config={"user": ALICE},
         ),
     ]

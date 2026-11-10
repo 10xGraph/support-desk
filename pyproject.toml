@@ -11,8 +11,8 @@ license = {text = "MIT"}
 requires-python = ">=3.12"
 authors = []
 dependencies = [
-    "10xgraph[google-genai,pg_checkpoint,pgvector,mcp]",
-    "10xgraph-api[jwt,redis,otel,jobs-rabbitmq]",
+    "10xgraph[google-genai,pg_checkpoint,pgvector,mcp,rabbitmq,phoenix]",
+    "10xgraph-api[jwt,redis,otel,metrics,jobs-rabbitmq]",
     "yake>=0.7.3",
 ]
 

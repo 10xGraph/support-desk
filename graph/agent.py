@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from injectq import InjectQ
 from tenxgraph.core.state import Message, MessageContextManager
 from tenxgraph.prebuilt.agent import ReactAgent
+from tenxgraph.runtime.publisher import RabbitMQPublisher
 from tenxgraph.storage.checkpointer import PgCheckpointer
 from tenxgraph.storage.store import (
     AgentMemoryConfig,
@@ -50,6 +51,10 @@ store = PgVectorStore(
     tenant_columns=TENANT_COLUMNS,
 )
 
+# Graph events (node starts, tool calls, results) to RabbitMQ exchange "tenxgraph.events". The
+# API adds the Phoenix tracer from "observability" in 10xgraph.json next to it.
+events = RabbitMQPublisher({"url": os.getenv("BROKER_URL")})
+
 # Dependency injection container; 10xgraph.json points at it ("injectq": "graph.agent:container").
 container = InjectQ.get_instance()
 
@@ -79,6 +84,7 @@ react_agent = ReactAgent(
     trim_context=True,
     context_manager=MessageContextManager(max_messages=20, remove_tool_msgs=True),
     container=container,
+    publisher=events,
 )
 
 app = react_agent.compile(
