@@ -1,0 +1,61 @@
+Gemini implicit caching experiment, 2026-11-10T19:12:40+00:00
+model=gemini-2.5-flash google-genai=3.0.0 repeats=2 sleep=3.0s
+static rules alone: 2592 tokens
+
+S0_identical rep=1 first          prompt=  2954 cached=     0 hit=  0% 
+S0_identical rep=1 second         prompt=  2954 cached=  2028 hit= 69% 
+S0_identical rep=1 third          prompt=  2954 cached=  2028 hit= 69% 
+S1_ctx_end  rep=1 turn1          prompt=  2670 cached=     0 hit=  0% 
+S1_ctx_end  rep=1 turn2          prompt=  2837 cached=     0 hit=  0% 
+S1_ctx_end  rep=1 turn3          prompt=  2996 cached=     0 hit=  0% 
+S1_ctx_end  rep=1 turn4          prompt=  3158 cached=  2026 hit= 64% 
+S1_ctx_end  rep=1 turn5          prompt=  3322 cached=  3033 hit= 91% 
+S2_ctx_before rep=1 turn1          prompt=  2670 cached=     0 hit=  0% 
+S2_ctx_before rep=1 turn2          prompt=  2837 cached=     0 hit=  0% 
+S2_ctx_before rep=1 turn3          prompt=  2996 cached=     0 hit=  0% 
+S2_ctx_before rep=1 turn4          prompt=  3158 cached=  2025 hit= 64% 
+S2_ctx_before rep=1 turn5          prompt=  3322 cached=  3032 hit= 91% 
+S3_ctx_system rep=1 turn1          prompt=  2670 cached=     0 hit=  0% 
+S3_ctx_system rep=1 turn2          prompt=  2837 cached=     0 hit=  0% 
+S3_ctx_system rep=1 turn3          prompt=  2996 cached=     0 hit=  0% 
+S3_ctx_system rep=1 turn4          prompt=  3158 cached=  2024 hit= 64% 
+S3_ctx_system rep=1 turn5          prompt=  3322 cached=  2021 hit= 61% 
+S4_cross    rep=1 userA          prompt=  2629 cached=     0 hit=  0% 
+S4_cross    rep=1 userB          prompt=  2623 cached=     0 hit=  0% 
+S4_cross    rep=1 userC          prompt=  2625 cached=  2038 hit= 78% 
+S5_tool     rep=1 call1          prompt=  2995 cached=     0 hit=  0% 
+S5_tool     rep=1 call2_after_fr prompt=  3056 cached=  2015 hit= 66% 
+S0_identical rep=2 first          prompt=  2953 cached=     0 hit=  0% 
+S0_identical rep=2 second         prompt=  2953 cached=  2028 hit= 69% 
+S0_identical rep=2 third          prompt=  2953 cached=  2028 hit= 69% 
+S1_ctx_end  rep=2 turn1          prompt=  2668 cached=     0 hit=  0% 
+S1_ctx_end  rep=2 turn2          prompt=  2835 cached=     0 hit=  0% 
+S1_ctx_end  rep=2 turn3          prompt=  2994 cached=     0 hit=  0% 
+S1_ctx_end  rep=2 turn4          prompt=  3156 cached=  2026 hit= 64% 
+S1_ctx_end  rep=2 turn5          prompt=  3320 cached=  3033 hit= 91% 
+S2_ctx_before rep=2 turn1          prompt=  2668 cached=     0 hit=  0% 
+S2_ctx_before rep=2 turn2          prompt=  2835 cached=     0 hit=  0% 
+S2_ctx_before rep=2 turn3          prompt=  2994 cached=     0 hit=  0% 
+S2_ctx_before rep=2 turn4          prompt=  3156 cached=  2025 hit= 64% 
+S2_ctx_before rep=2 turn5          prompt=  3320 cached=  3032 hit= 91% 
+S3_ctx_system rep=2 turn1          prompt=  2668 cached=     0 hit=  0% 
+S3_ctx_system rep=2 turn2          prompt=  2835 cached=     0 hit=  0% 
+S3_ctx_system rep=2 turn3          prompt=  2994 cached=     0 hit=  0% 
+S3_ctx_system rep=2 turn4          prompt=  3156 cached=  2024 hit= 64% 
+S3_ctx_system rep=2 turn5          prompt=  3320 cached=  2021 hit= 61% 
+S4_cross    rep=2 userA          prompt=  2628 cached=     0 hit=  0% 
+S4_cross    rep=2 userB          prompt=  2622 cached=     0 hit=  0% 
+S4_cross    rep=2 userC          prompt=  2624 cached=  2038 hit= 78% 
+S5_tool     rep=2 call1          prompt=  2993 cached=     0 hit=  0% 
+S5_tool     rep=2 call2_after_fr prompt=  3054 cached=  2015 hit= 66% 
+
+SUMMARY (calls after the first of each run; the first call of a new prefix is a miss)
+scenario       calls   prompt   cached   hit errors
+S0_identical       4    11814     8112   69% 0
+S1_ctx_end         8    24618    10118   41% 0
+S2_ctx_before      8    24618    10114   41% 0
+S3_ctx_system      8    24618     8090   33% 0
+S4_cross           4    10494     4076   39% 0
+S5_tool            2     6110     4030   66% 0
+
+Written to /home/shudiptot/projects/Agentflow/phoenix-demo/cache_experiment_results.txt

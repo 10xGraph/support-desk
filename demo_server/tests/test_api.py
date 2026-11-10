@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from demo_server.main import app
 
-from .conftest import make_token
+from .conftest import agent_token, make_token
 
 
 DB_URL = os.getenv("TEST_DATABASE_URL")
@@ -48,10 +48,9 @@ def call_tool(client, name, arguments, org_id="acme", user_id="alice"):
         "params": {
             "name": name,
             "arguments": arguments,
-            "_meta": {"user": {"user_id": user_id, "tenant": {"org_id": org_id}}},
         },
     }
-    headers = {**MCP_HEADERS, **auth(user_id="support-agent", roles=["service"], org_id=None)}
+    headers = {**MCP_HEADERS, "Authorization": f"Bearer {agent_token(user_id, org_id)}"}
     r = client.post("/mcp/", json=body, headers=headers)
     assert r.status_code == HTTPStatus.OK, r.text
     return r.json()["result"]["content"][0]["text"]
@@ -117,7 +116,7 @@ def test_ticket(client):
     assert tickets[0]["needs_human"] is True
 
 
-def test_mcp_rejects_non_service_token(client):
+def test_mcp_rejects_user_tokens(client):
     body = {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}
     r = client.post("/mcp/", json=body, headers={**MCP_HEADERS, **auth(roles=["admin"])})
     assert r.status_code == HTTPStatus.UNAUTHORIZED

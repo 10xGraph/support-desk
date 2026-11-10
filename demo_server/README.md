@@ -38,10 +38,13 @@ Every query is limited to the token's `org_id`.
 
 ## MCP (`/mcp/`)
 
-Needs a token with the `service` role (the agent mints one with the same secret). The customer
-comes from the request's `_meta.user` (`user_id`, `tenant.org_id`), which 10xGraph's ToolNode
-sends with `pass_user_info_to_mcp=True`. That is trusted only because the caller holds the
-service token, so keep `/mcp` on the internal network.
+Only the support agent's own tokens: audience `demo-mcp`, signed with the same secret. The agent
+signs one per call through 10xGraph's `ToolNode(mcp_auth=...)` (`graph/support_tools.py`), valid
+for 60 seconds, naming the customer (`user_id`, `org_id`) and itself as the actor
+(`act.sub = "support-agent"`). Tools take the customer from that verified token. A token with
+only the agent (role `service`) can list tools but not use them. A user's own token has no
+audience and is refused here; an agent token has one and is refused on the REST API. Anyone
+holding `JWT_SECRET_KEY` can sign these tokens, so keep `/mcp` on the internal network.
 
 Tools: `lookup_order(order_id)`, `refund_order(order_id, amount, reason)` (up to $100 issued at
 once, more waits for staff; one refund per order), `create_ticket(summary, needs_human)`.

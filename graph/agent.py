@@ -20,7 +20,7 @@ from graph.validators.manager import callback_manager
 load_dotenv()
 
 # Imported after load_dotenv(): support_tools reads DEMO_MCP_URL when the module loads.
-from graph.support_tools import mcp_client  # noqa: E402
+from graph.support_tools import demo_server_auth, mcp_client  # noqa: E402
 
 
 # Every thread and knowledge-base row carries the caller's company, from the token's org_id
@@ -60,7 +60,8 @@ react_agent = ReactAgent(
     provider="google",
     system_prompt=[{"role": "system", "content": SYSTEM_PROMPT}],
     client=mcp_client,
-    pass_user_info_to_mcp=True,
+    # Each MCP call carries a 60-second token naming the customer, signed by this agent.
+    mcp_auth=demo_server_auth,
     memory=MemoryConfig(
         store=store,
         user_memory=None,

@@ -23,8 +23,10 @@ reference file it points to. Tell every subagent you start to do the same.
 One support agent for two demo companies (`acme`, `globex`, JWT claim `org_id`).
 
 - `graph/agent.py`: one `ReactAgent`. Tools come from demo_server over MCP (`lookup_order`,
-  `refund_order`, `create_ticket`), called with a 5-minute service JWT plus the customer in
-  MCP metadata. The knowledge base is search-only agent memory (`agent_memory_tool`) in
+  `refund_order`, `create_ticket`). `graph/support_tools.py` `demo_server_auth` is the
+  `mcp_auth`: it signs a 60-second token per call (aud `demo-mcp`) naming the customer and the
+  agent as actor; demo_server takes the customer from that token, not from MCP metadata, and
+  never sees the customer's own API token. The knowledge base is search-only agent memory (`agent_memory_tool`) in
   PgVectorStore with Google embeddings, one set of articles per company.
 - `graph/prompts.py`: the system prompt. `graph/state.py`: `SupportState` (conversation only).
 - `deploy/scripts/seed_knowledge_base.py`: loads the knowledge base for every company. It runs

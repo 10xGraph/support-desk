@@ -5,29 +5,28 @@ from decimal import Decimal
 import asyncpg
 from fastmcp import Context, FastMCP
 from fastmcp.exceptions import ToolError
+from fastmcp.server.dependencies import get_access_token
 
 from demo_server import db
-from demo_server.auth import ServiceTokenVerifier
+from demo_server.auth import AgentTokenVerifier
 
 
 AUTO_REFUND_LIMIT = Decimal("100.00")
 
-mcp = FastMCP("support-desk-systems", auth=ServiceTokenVerifier(), mask_error_details=True)
+mcp = FastMCP("support-desk-systems", auth=AgentTokenVerifier(), mask_error_details=True)
 
 
 def customer(ctx: Context) -> tuple[str, str]:
-    """(org_id, user_id) of the customer the agent acts for, from `_meta.user`.
+    """(org_id, user_id) of the customer the agent acts for, from the verified token.
 
-    10xGraph's ToolNode sends meta={"user": config["user"]} (pass_user_info_to_mcp=True).
-    This meta is trusted only because the caller holds the service token, so /mcp must stay
-    on the internal network.
+    The agent signs one short-lived token per call (aud "demo-mcp") naming the customer and
+    itself as the actor; AgentTokenVerifier checked it before this tool runs. A token without a
+    customer (the agent fetching the tool list) can list tools but not use them.
     """
-    meta = ctx.request_context.meta if ctx.request_context else None
-    user = (meta or {}).get("user")
-    user = user if isinstance(user, dict) else {}
-    tenant = user.get("tenant") if isinstance(user.get("tenant"), dict) else {}
-    org_id, user_id = tenant.get("org_id"), user.get("user_id")
-    if not isinstance(org_id, str) or not org_id or not isinstance(user_id, str) or not user_id:
+    token = get_access_token()
+    claims = token.claims if token is not None else {}
+    org_id, user_id = claims.get("org_id"), claims.get("user_id")
+    if not claims.get("act") or not isinstance(org_id, str) or not org_id or not user_id:
         raise ToolError("No customer identity on this call.")
     return org_id, user_id
 

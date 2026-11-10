@@ -12,10 +12,35 @@ def test_main_agent_is_the_support_agent() -> None:
     assert agent.system_prompt[0]["content"] == SYSTEM_PROMPT
 
 
-def test_tools_come_from_demo_server_with_the_user_attached() -> None:
+def test_tools_come_from_demo_server_with_a_per_call_token() -> None:
+    from graph.support_tools import demo_server_auth
+
     tool_node = react_agent._tool_node
     assert tool_node._client is not None
-    assert tool_node._pass_user_info_to_mcp is True
+    assert tool_node._mcp_auth is demo_server_auth
+
+
+async def test_demo_server_token_names_the_customer_and_the_agent(monkeypatch) -> None:
+    import jwt
+    from tenxgraph.core.authz import Identity
+    from tenxgraph.core.graph.tool_node import MCPAuthContext
+
+    from graph.support_tools import demo_server_auth
+
+    monkeypatch.setenv("JWT_SECRET_KEY", "s" * 40)
+    alice = Identity(user_id="alice", tenant={"org_id": "acme"}, roles=["member"])
+    headers = await demo_server_auth(MCPAuthContext(alice, None, "lookup_order", None, "t", "r"))
+    token = headers["Authorization"].removeprefix("Bearer ")
+    claims = jwt.decode(token, "s" * 40, algorithms=["HS256"], audience="demo-mcp")
+    assert (claims["user_id"], claims["org_id"]) == ("alice", "acme")
+    assert claims["act"] == {"sub": "support-agent"}
+    assert claims["exp"] - claims["iat"] == 60
+
+    listing = await demo_server_auth(MCPAuthContext(None, None, None, None, None, None))
+    token = listing["Authorization"].removeprefix("Bearer ")
+    claims = jwt.decode(token, "s" * 40, algorithms=["HS256"], audience="demo-mcp")
+    assert claims["roles"] == ["service"]
+    assert "org_id" not in claims
 
 
 def test_knowledge_base_is_search_only_agent_memory() -> None:
@@ -65,6 +90,7 @@ async def test_lifecycle_fills_the_customer_from_the_verified_token() -> None:
         GraphLifecycleContext(config={"user": identity}), state
     )
     assert (state.user_id, state.user_name, state.org_id) == ("alice", "Alice", "acme")
+    assert len(state.today) == len("2026-11-11")
 
 
 async def test_lifecycle_remembers_the_last_refund_and_ticket() -> None:

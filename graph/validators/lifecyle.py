@@ -2,6 +2,7 @@
 
 import logging
 import re
+from datetime import UTC, datetime
 from typing import Any
 
 from tenxgraph.core.authz import get_identity
@@ -38,10 +39,12 @@ class AgentLifecycleHook(GraphLifecycleHook[SupportState]):
         context: GraphLifecycleContext,
         state: SupportState,
     ) -> SupportState | None:
-        """Copy who is calling from the verified token (config["user"]) into the state.
+        """Copy who is calling from the verified token (config["user"]) and today's date into
+        the state.
 
         Runs on every run, so a value a client wrote into the state is replaced.
         """
+        state.today = datetime.now(UTC).date().isoformat()
         identity = get_identity(context.config)
         if identity is None:
             return state

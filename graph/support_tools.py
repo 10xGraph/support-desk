@@ -3,42 +3,51 @@
 import os
 import time
 import uuid
-from collections.abc import Generator
 
-import httpx2
 import jwt
 from fastmcp import Client
 from fastmcp.client.transports import StreamableHttpTransport
+from tenxgraph.core.graph.tool_node import MCPAuthContext
 
 
-SERVICE_ID = "support-agent"
+AGENT_ID = "support-agent"
+DEMO_MCP_AUDIENCE = "demo-mcp"  # demo_server accepts this audience on /mcp only
+TOKEN_TTL_SECONDS = 60
 
 
-class ServiceTokenAuth(httpx2.Auth):
-    """Signs a fresh 5-minute service JWT for every request to the demo_server MCP endpoint.
+async def demo_server_auth(ctx: MCPAuthContext) -> dict[str, str]:
+    """Headers for one MCP request to demo_server: a short-lived token this agent signs.
 
-    demo_server checks it with the same JWT_SECRET_KEY, then reads the customer from the
-    request metadata that 10xGraph attaches (pass_user_info_to_mcp).
+    10xGraph calls this before every MCP tool call and tool listing (ToolNode mcp_auth). For a
+    tool call the token names the customer as the subject and this agent as the actor (`act`),
+    so demo_server verifies who acts for whom from a signed token. The customer's own API token
+    is never forwarded: it was issued for this API, not for demo_server.
     """
-
-    def auth_flow(self, request: httpx2.Request) -> Generator[httpx2.Request, httpx2.Response]:
-        now = int(time.time())
-        claims = {
-            "user_id": SERVICE_ID,
-            "roles": ["service"],
-            "jti": uuid.uuid4().hex,
-            "iat": now,
-            "exp": now + 300,
+    now = int(time.time())
+    claims = {
+        "aud": DEMO_MCP_AUDIENCE,
+        "jti": uuid.uuid4().hex,
+        "iat": now,
+        "exp": now + TOKEN_TTL_SECONDS,
+    }
+    identity = ctx.identity
+    if identity is not None and identity.tenant.get("org_id"):
+        # On behalf of the signed-in customer, taken from the verified identity.
+        claims |= {
+            "user_id": identity.user_id,
+            "org_id": identity.tenant["org_id"],
+            "roles": sorted(identity.roles),
+            "act": {"sub": AGENT_ID},
         }
-        token = jwt.encode(
-            claims, os.environ["JWT_SECRET_KEY"], algorithm=os.getenv("JWT_ALGORITHM", "HS256")
-        )
-        request.headers["Authorization"] = f"Bearer {token}"
-        yield request
+    else:
+        # No customer (fetching the tool list): the agent alone, which can list but not act.
+        claims |= {"user_id": AGENT_ID, "roles": ["service"]}
+    token = jwt.encode(
+        claims, os.environ["JWT_SECRET_KEY"], algorithm=os.getenv("JWT_ALGORITHM", "HS256")
+    )
+    return {"Authorization": f"Bearer {token}"}
 
 
 mcp_client = Client(
-    StreamableHttpTransport(
-        os.getenv("DEMO_MCP_URL", "http://localhost:8100/mcp/"), auth=ServiceTokenAuth()
-    )
+    StreamableHttpTransport(os.getenv("DEMO_MCP_URL", "http://localhost:8100/mcp/"))
 )

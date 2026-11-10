@@ -4,9 +4,9 @@ import jwt
 import pytest
 from fastapi import HTTPException
 
-from demo_server.auth import decode_token, staff_user
+from demo_server.auth import AgentTokenVerifier, decode_token, staff_user
 
-from .conftest import make_token
+from .conftest import agent_token, make_token
 
 
 def test_valid_token():
@@ -35,3 +35,20 @@ def test_staff_user_refuses_member():
 def test_staff_user_allows_support():
     user = {"user_id": "sam", "roles": ["support"], "org_id": "acme"}
     assert staff_user(user) is user
+
+
+def test_agent_token_is_refused_on_rest():
+    with pytest.raises(jwt.InvalidAudienceError):
+        decode_token(agent_token())
+
+
+async def test_mcp_accepts_only_agent_tokens():
+    verifier = AgentTokenVerifier()
+    acting = await verifier.verify_token(agent_token("alice", "acme"))
+    assert (acting.claims["user_id"], acting.claims["org_id"]) == ("alice", "acme")
+    assert await verifier.verify_token(agent_token(user_id=None)) is not None  # tool listing
+    assert await verifier.verify_token(make_token()) is None  # a user's own token
+    assert await verifier.verify_token(make_token(roles=["service"])) is None  # no audience
+    forged_actor = agent_token(act={"sub": "someone-else"})
+    assert await verifier.verify_token(forged_actor) is None
+    assert await verifier.verify_token(agent_token(ttl=-10)) is None  # expired

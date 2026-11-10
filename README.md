@@ -12,9 +12,10 @@ One ReAct support agent (`graph/agent.py`): a Gemini `Agent` node and a `ToolNod
 tools come from the `demo_server` MCP server: `lookup_order`, `refund_order` and `create_ticket`.
 `demo_server/` holds the company data and business rules (orders, refunds, tickets) in the
 Postgres schema `demo`, and exposes a REST API and the MCP endpoint, both checked against the
-same JWTs as the API. The agent server calls MCP with a short-lived service token (`user_id`
-`support-agent`, role `service`) and passes the customer's identity as MCP request metadata
-(`pass_user_info_to_mcp`), so demo_server decides whose data a tool may touch. See
+same JWT secret as the API. For every MCP call the agent signs a 60-second token
+(10xGraph `mcp_auth`, audience `demo-mcp`) that names the signed-in customer and the agent as
+the actor, so demo_server decides whose data a tool may touch from a verified token. The
+customer's own API token is never forwarded. See
 `demo_server/README.md` for its details.
 
 Refunds up to $100 go through at once. Larger ones are stored as pending until staff approve them

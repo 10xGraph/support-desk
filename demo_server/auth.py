@@ -1,7 +1,12 @@
 """JWT checks, using the same secret and claims as the 10xGraph API.
 
-Claims: user_id, roles (list), org_id; exp is required. Staff are support, org_admin and admin.
-The agent calls /mcp with a token whose roles contain "service".
+REST: the user's own token (claims user_id, roles, org_id; exp required). Staff are support,
+org_admin and admin.
+
+MCP: only the support agent's own short-lived tokens, with audience "demo-mcp". The agent signs
+one per call (graph/support_tools.py): the customer as user_id/org_id and itself as the actor
+(act.sub), or, to list tools, itself alone with role "service". A user token has no audience, so
+it is refused on /mcp; an agent token has one, so it is refused on REST.
 """
 
 import os
@@ -14,12 +19,17 @@ from fastmcp.server.auth import AccessToken, TokenVerifier
 
 
 STAFF_ROLES = {"support", "org_admin", "admin"}
+MCP_AUDIENCE = "demo-mcp"
+AGENT_ID = "support-agent"
 
 bearer = HTTPBearer(auto_error=False)
 
 
-def decode_token(token: str) -> dict[str, Any]:
-    """Return the claims of a valid token, or raise jwt.InvalidTokenError."""
+def decode_token(token: str, audience: str | None = None) -> dict[str, Any]:
+    """Return the claims of a valid token, or raise jwt.InvalidTokenError.
+
+    Without `audience`, a token that carries an `aud` claim is refused (InvalidAudienceError).
+    """
     secret = os.getenv("JWT_SECRET_KEY")
     if not secret:
         raise RuntimeError("JWT_SECRET_KEY is not set.")
@@ -27,7 +37,8 @@ def decode_token(token: str) -> dict[str, Any]:
         token,
         secret,
         algorithms=[os.getenv("JWT_ALGORITHM", "HS256")],
-        options={"require": ["exp"]},
+        audience=audience,
+        options={"require": ["exp", "aud"] if audience else ["exp"]},
     )
     if not isinstance(claims.get("roles"), list) or not claims.get("user_id"):
         raise jwt.InvalidTokenError("Token needs user_id and a roles list.")
@@ -56,19 +67,21 @@ def staff_user(user: dict[str, Any] = Depends(current_user)) -> dict[str, Any]:
     return user
 
 
-class ServiceTokenVerifier(TokenVerifier):
-    """MCP bearer check: only a valid token with the "service" role gets through."""
+class AgentTokenVerifier(TokenVerifier):
+    """MCP bearer check: only tokens the support agent signed for demo_server get through."""
 
     async def verify_token(self, token: str) -> AccessToken | None:
         try:
-            claims = decode_token(token)
+            claims = decode_token(token, audience=MCP_AUDIENCE)
         except jwt.InvalidTokenError:
             return None
-        if "service" not in claims["roles"]:
+        acting_for_customer = (claims.get("act") or {}).get("sub") == AGENT_ID
+        agent_alone = claims["user_id"] == AGENT_ID and "service" in claims["roles"]
+        if not (acting_for_customer or agent_alone):
             return None
         return AccessToken(
             token=token,
-            client_id=str(claims["user_id"]),
+            client_id=AGENT_ID,
             scopes=[],
             expires_at=int(claims["exp"]),
             claims=claims,
