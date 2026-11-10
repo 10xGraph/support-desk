@@ -49,5 +49,10 @@ async def demo_server_auth(ctx: MCPAuthContext) -> dict[str, str]:
 
 
 mcp_client = Client(
-    StreamableHttpTransport(os.getenv("DEMO_MCP_URL", "http://localhost:8100/mcp/"))
+    StreamableHttpTransport(
+        os.getenv(
+            "DEMO_MCP_URL",
+            "http://localhost:8100/mcp/",
+        )
+    )
 )
