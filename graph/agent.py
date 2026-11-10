@@ -63,10 +63,17 @@ react_agent = ReactAgent(
     state=SupportState(),
     model="gemini-2.5-flash",
     provider="google",
-    system_prompt=[{"role": "system", "content": SYSTEM_PROMPT}],
+    system_prompt=[
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        },
+    ],
     # Changing per-request context (date, last refund, last ticket) goes after the history so
     # the system prompt and history stay a stable, cacheable prefix. Filled from the state.
-    extra_messages=[Message.text_message(CONTEXT_PROMPT, role="user")],
+    extra_messages=[
+        Message.text_message(CONTEXT_PROMPT, role="user"),
+    ],
     client=mcp_client,
     # Each MCP call carries a 60-second token naming the customer, signed by this agent.
     mcp_auth=demo_server_auth,
@@ -82,7 +89,10 @@ react_agent = ReactAgent(
         ),
     ),
     trim_context=True,
-    context_manager=MessageContextManager(max_messages=20, remove_tool_msgs=True),
+    context_manager=MessageContextManager(
+        max_messages=20,
+        remove_tool_msgs=True,
+    ),
     container=container,
     publisher=events,
 )

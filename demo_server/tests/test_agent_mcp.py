@@ -77,6 +77,7 @@ async def lookup(url: str, config: dict, order_id: str) -> str:
     message = await node.invoke(
         "lookup_order", {"order_id": order_id}, "call-1", config, AgentState(), CallbackManager()
     )
+    assert message.content[0].name == "lookup_order"  # what the lifecycle hook reads
     return message.text()
 
 

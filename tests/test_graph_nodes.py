@@ -119,17 +119,12 @@ async def test_lifecycle_remembers_the_last_refund_and_ticket() -> None:
     from graph.state import SupportState
     from graph.validators.lifecyle import AgentLifecycleHook
 
-    def call(call_id: str, name: str) -> dict:
-        return {"id": call_id, "function": {"name": name, "arguments": {}}}
-
     refund = "Refund of $250.00 for order A-1002 is pending staff approval (#7)."
-    asked = Message.text_message("", role="assistant")
-    asked.tools_calls = [call("c1", "refund_order"), call("c2", "create_ticket")]
+    ticket = "Ticket ACME-1042 created."
     state = SupportState()
     state.context = [
-        asked,
-        Message.tool_message([ToolResultBlock(call_id="c1", output=refund)]),
-        Message.tool_message([ToolResultBlock(call_id="c2", output="Ticket ACME-1042 created.")]),
+        Message.tool_message([ToolResultBlock(call_id="c1", name="refund_order", output=refund)]),
+        Message.tool_message([ToolResultBlock(call_id="c2", name="create_ticket", output=ticket)]),
     ]
     state = await AgentLifecycleHook().on_state_update(
         GraphLifecycleContext(config={}), "TOOL", SupportState(), state, 1

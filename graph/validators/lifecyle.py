@@ -18,21 +18,6 @@ logger = logging.getLogger(__name__)
 TICKET_ID = re.compile(r"Ticket ([A-Z0-9_-]+-\d+) created")
 
 
-def _tool_results(messages: list[Message]) -> list[tuple[str, str]]:
-    """(tool name, result text) for each tool result in the messages, oldest first."""
-    names: dict[str, str] = {}
-    results: list[tuple[str, str]] = []
-    for message in messages:
-        for call in message.tools_calls or []:
-            names[call.get("id", "")] = call.get("function", {}).get("name", "")
-        if message.role != "tool":
-            continue
-        for block in message.content:
-            if isinstance(block, ToolResultBlock) and isinstance(block.output, str):
-                results.append((names.get(block.call_id, ""), block.output))
-    return results
-
-
 class AgentLifecycleHook(GraphLifecycleHook[SupportState]):
     async def on_graph_start(
         self,
@@ -135,9 +120,14 @@ class AgentLifecycleHook(GraphLifecycleHook[SupportState]):
         """After the tool node: remember the latest refund status and ticket id."""
         if node_name != "TOOL":
             return None
-        for tool, text in _tool_results(new_state.context):
-            if tool == "refund_order":
-                new_state.last_refund_status = text
-            elif tool == "create_ticket" and (match := TICKET_ID.search(text)):
-                new_state.last_ticket_id = match.group(1)
+        for message in new_state.context:
+            if message.role != "tool":
+                continue
+            for block in message.content:
+                if not isinstance(block, ToolResultBlock) or not isinstance(block.output, str):
+                    continue
+                if block.name == "refund_order":
+                    new_state.last_refund_status = block.output
+                elif block.name == "create_ticket" and (match := TICKET_ID.search(block.output)):
+                    new_state.last_ticket_id = match.group(1)
         return new_state

@@ -1,0 +1,67 @@
+# Exclude secrets and credentials (COPY . . would ship them in the image)
+.env
+.env.*
+*.env
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+service_account*.json
+service-account*.json
+credentials*.json
+.aws/
+.ssh/
+.netrc
+.pypirc
+.npmrc
+configs/
+
+# Exclude Python artifacts and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Exclude virtual environments
+.venv/
+venv/
+env/
+
+# Exclude deployment files the running app never reads
+docker-compose*.yml
+compose*.yaml
+k8s.yaml
+
+# Exclude version control and IDE files
+.git/
+.gitignore
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Exclude built assets and distribution files
+build/
+dist/
+*.egg-info/
+
+# Exclude local data directories
+data/
+db.sqlite3
+store/
+uploads/
+eval_reports/
+
+# Exclude dev-only project folders: tests, evals, and installed agent skills
+tests/
+evals/
+.claude/
+.agents/
+.github/
