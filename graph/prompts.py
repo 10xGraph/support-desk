@@ -41,12 +41,9 @@ their name naturally after that. Never ask for their customer ID or company: you
 have them."""
 
 # Slot 4: sent as a role "user" message after the history on every call, never saved to the
-# thread. It must be role "user": the Gemini and Anthropic adapters move every role "system"
-# message to the front of the request, which would break the cache again.
-#
-# Not attached to the agent yet: 10xGraph does not fill {placeholders} in extra_messages, so the
-# model would see the braces as written. Once core interpolates extra_messages, pass it as
-#   ReactAgent(..., extra_messages=[Message.text_message(CONTEXT_PROMPT, role="user")])
+# thread (ReactAgent extra_messages in graph/agent.py). It must be role "user": the Gemini and
+# Anthropic adapters move every role "system" message to the front of the request, which would
+# break the cache again.
 CONTEXT_PROMPT = """<conversation_context>
 Today: {today}
 Last refund in this conversation: {last_refund_status}

@@ -11,9 +11,15 @@ You only need to define your scenarios. No asyncio, no EvalSetBuilder, no boiler
 Usage:
     10xgraph eval evals/user_simulator_eval.py
     10xgraph eval evals/user_simulator_eval.py --parallel --max-concurrency 4
+
+Known gap: `10xgraph eval` runs scenarios without a run config, so there is no signed-in
+customer. demo_server then refuses every tool call and these goals cannot be met. Until a
+scenario can carry the customer (config["user"]), use evals/support_agent_eval.py, whose cases
+do.
 """
 
 from tenxgraph.qa.evaluation import ConversationScenario, UserSimulatorConfig
+
 
 # ---------------------------------------------------------------------------
 # Agent — the CLI reads `app` from this module if present, otherwise it loads

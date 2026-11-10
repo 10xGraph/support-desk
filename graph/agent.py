@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from injectq import InjectQ
-from tenxgraph.core.state import MessageContextManager
+from tenxgraph.core.state import Message, MessageContextManager
 from tenxgraph.prebuilt.agent import ReactAgent
 from tenxgraph.storage.checkpointer import PgCheckpointer
 from tenxgraph.storage.store import (
@@ -12,7 +12,7 @@ from tenxgraph.storage.store import (
     PgVectorStore,
 )
 
-from graph.prompts import SYSTEM_PROMPT
+from graph.prompts import CONTEXT_PROMPT, SYSTEM_PROMPT
 from graph.state import SupportState
 from graph.validators.manager import callback_manager
 
@@ -59,6 +59,9 @@ react_agent = ReactAgent(
     model="gemini-2.5-flash",
     provider="google",
     system_prompt=[{"role": "system", "content": SYSTEM_PROMPT}],
+    # Changing per-request context (date, last refund, last ticket) goes after the history so
+    # the system prompt and history stay a stable, cacheable prefix. Filled from the state.
+    extra_messages=[Message.text_message(CONTEXT_PROMPT, role="user")],
     client=mcp_client,
     # Each MCP call carries a 60-second token naming the customer, signed by this agent.
     mcp_auth=demo_server_auth,

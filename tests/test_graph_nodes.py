@@ -12,6 +12,24 @@ def test_main_agent_is_the_support_agent() -> None:
     assert agent.system_prompt[0]["content"] == SYSTEM_PROMPT
 
 
+def test_request_ends_with_the_filled_conversation_context() -> None:
+    from tenxgraph.core.state import Message
+    from tenxgraph.utils.converter import convert_messages
+
+    from graph.state import SupportState
+
+    agent = react_agent._agent
+    state = SupportState(user_name="Alice", today="2026-11-11", last_ticket_id="ACME-1042")
+    state.context = [Message.text_message("Where is my order?", role="user")]
+    request = convert_messages(agent.system_prompt, state, agent.extra_messages)
+
+    assert "Name: Alice" in request[0]["content"]
+    assert request[-1]["role"] == "user"
+    assert "Today: 2026-11-11" in request[-1]["content"]
+    assert "Last ticket in this conversation: ACME-1042" in request[-1]["content"]
+    assert "Last refund in this conversation: none" in request[-1]["content"]
+
+
 def test_tools_come_from_demo_server_with_a_per_call_token() -> None:
     from graph.support_tools import demo_server_auth
 

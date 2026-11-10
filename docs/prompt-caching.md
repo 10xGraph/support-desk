@@ -109,18 +109,10 @@ keeps different users' shared-prefix entries on different machines.
   (`tenxgraph/utils/converter.py`), and never saves `extra_messages` to the thread. That is
   exactly slot 4.
 
-**Open item:** 10xGraph fills `{placeholders}` only in `system_prompt`, not in
-`extra_messages`, so `CONTEXT_PROMPT` is not attached yet. Once core interpolates
-`extra_messages`, pass it as:
-
-```python
-from tenxgraph.core.state import Message
-from graph.prompts import CONTEXT_PROMPT
-
-ReactAgent(..., extra_messages=[Message.text_message(CONTEXT_PROMPT, role="user")])
-```
-
-Until then the model does not see the last refund, last ticket or date.
+`graph/agent.py` attaches slot 4 with
+`extra_messages=[Message.text_message(CONTEXT_PROMPT, role="user")]`. 10xGraph fills
+`{placeholders}` in `extra_messages` from the state the same way as in `system_prompt`; a field
+that is not in the state stays as written.
 
 ## Measured on Gemini (2026-11-10)
 
