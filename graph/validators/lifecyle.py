@@ -1,15 +1,35 @@
 """Lifecycle hooks for the support agent graph."""
 
 import logging
+import re
 from typing import Any
 
+from tenxgraph.core.authz import get_identity
 from tenxgraph.core.state.message import Message
+from tenxgraph.core.state.message_block import ToolResultBlock
 from tenxgraph.utils.callbacks import GraphLifecycleContext, GraphLifecycleHook
 
 from graph.state import SupportState
 
 
 logger = logging.getLogger(__name__)
+
+TICKET_ID = re.compile(r"Ticket ([A-Z0-9_-]+-\d+) created")
+
+
+def _tool_results(messages: list[Message]) -> list[tuple[str, str]]:
+    """(tool name, result text) for each tool result in the messages, oldest first."""
+    names: dict[str, str] = {}
+    results: list[tuple[str, str]] = []
+    for message in messages:
+        for call in message.tools_calls or []:
+            names[call.get("id", "")] = call.get("function", {}).get("name", "")
+        if message.role != "tool":
+            continue
+        for block in message.content:
+            if isinstance(block, ToolResultBlock) and isinstance(block.output, str):
+                results.append((names.get(block.call_id, ""), block.output))
+    return results
 
 
 class AgentLifecycleHook(GraphLifecycleHook[SupportState]):
@@ -18,7 +38,16 @@ class AgentLifecycleHook(GraphLifecycleHook[SupportState]):
         context: GraphLifecycleContext,
         state: SupportState,
     ) -> SupportState | None:
-        """Hydrate ``SupportState`` from the org config attached by AgentAuth."""
+        """Copy who is calling from the verified token (config["user"]) into the state.
+
+        Runs on every run, so a value a client wrote into the state is replaced.
+        """
+        identity = get_identity(context.config)
+        if identity is None:
+            return state
+        state.user_id = identity.user_id
+        state.user_name = str(identity.claims.get("name") or identity.user_id)
+        state.org_id = identity.tenant.get("org_id", "")
         return state
 
     async def on_graph_end(
@@ -100,8 +129,12 @@ class AgentLifecycleHook(GraphLifecycleHook[SupportState]):
         new_state: SupportState,
         step: int,
     ) -> SupportState | None:
-        """Called after each node's result is merged into state.
-
-        Return a modified SupportState to replace new_state, or None to use new_state unchanged.
-        """
-        return None
+        """After the tool node: remember the latest refund status and ticket id."""
+        if node_name != "TOOL":
+            return None
+        for tool, text in _tool_results(new_state.context):
+            if tool == "refund_order":
+                new_state.last_refund_status = text
+            elif tool == "create_ticket" and (match := TICKET_ID.search(text)):
+                new_state.last_ticket_id = match.group(1)
+        return new_state

@@ -58,8 +58,8 @@ Only Caddy (ports 80 and 443) is public. Everything else is on the internal Dock
 4. Make a token per user, role and tenant (prints only the token; reads `.env`):
 
    ```bash
-   .venv/bin/python scripts/make_token.py alice --role member --org acme
-   .venv/bin/python scripts/make_token.py sam --role support --org globex --ttl-hours 2
+   .venv/bin/python deploy/scripts/make_token.py alice --name "Alice Chen" --role member --org acme
+   .venv/bin/python deploy/scripts/make_token.py sam --name "Sam Lee" --role support --org globex --ttl-hours 2
    curl -k -H "Authorization: Bearer $TOKEN" https://localhost/v1/me   # shows role, tenant, reach
    ```
 
@@ -81,7 +81,7 @@ A user with role `support`, `org_admin` or `admin` approves one with the same ki
 demo_server is not behind Caddy; with the dev override it listens on `127.0.0.1:8100`:
 
 ```bash
-STAFF_TOKEN=$(.venv/bin/python scripts/make_token.py sam --role support --org acme)
+STAFF_TOKEN=$(.venv/bin/python deploy/scripts/make_token.py sam --name "Sam Lee" --role support --org acme)
 curl -H "Authorization: Bearer $STAFF_TOKEN" "http://127.0.0.1:8100/v1/refunds?status=pending"
 curl -X POST -H "Authorization: Bearer $STAFF_TOKEN" http://127.0.0.1:8100/v1/refunds/<refund_id>/approve
 ```

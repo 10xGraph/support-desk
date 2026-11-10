@@ -25,7 +25,7 @@ In Docker Compose it runs as the `demo-server` service.
 
 ## REST
 
-Bearer token from `scripts/make_token.py` (claims `user_id`, `roles`, `org_id`, `exp`).
+Bearer token from `deploy/scripts/make_token.py` (claims `user_id`, `name`, `roles`, `org_id`, `exp`).
 Every query is limited to the token's `org_id`.
 
 | Endpoint | Who |

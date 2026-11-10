@@ -4,7 +4,7 @@ Usage: .venv/bin/python scripts/make_secret.py [--force]
 
 Creates .env when missing. Other lines in .env are kept. An existing JWT_SECRET_KEY is kept
 unless --force is given (a new secret makes every token issued before it invalid).
-Then make a token with: .venv/bin/python scripts/make_token.py user-1 --org acme
+Then make a token with: .venv/bin/python deploy/scripts/make_token.py user-1 --name "Alice Chen" --org acme
 """
 
 import secrets
