@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+
+# The API pushes metrics to Prometheus over OTLP (--web.enable-otlp-receiver), so there are
+# no scrape jobs. service.name becomes the `job` label; service.instance.id adds one series
+# per process.
+otlp:
+  promote_resource_attributes:
+    - service.instance.id

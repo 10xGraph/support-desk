@@ -1,0 +1,27 @@
+# The only public entry point. SITE_ADDRESS comes from .env (default localhost).
+#   localhost        -> Caddy signs a certificate with its own internal CA (browser warning
+#                       until you trust it, see README).
+#   support.example.com -> Caddy gets a Let's Encrypt certificate by itself. Point the DNS
+#                       A record at the server and keep ports 80 and 443 open.
+# The API already sets HSTS, CSP, X-Frame-Options, nosniff, Referrer-Policy and Cache-Control,
+# so they are not repeated here.
+{$SITE_ADDRESS:localhost} {
+	# Hide the proxy's identity (Server header; Via is added by the proxy itself).
+	header -Server
+	header -Via
+
+	# Slightly above the API's own MAX_REQUEST_SIZE (10 MB); the API gives the clean error.
+	request_body {
+		max_size 11MB
+	}
+
+	reverse_proxy api:8000 {
+		# Send each chunk right away: needed for SSE streaming. WebSocket upgrades pass
+		# through without extra settings.
+		flush_interval -1
+		# Do not give up on a quiet upstream; agent runs can take minutes.
+		transport http {
+			response_header_timeout 0
+		}
+	}
+}

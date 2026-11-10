@@ -1,0 +1,5 @@
+fastapi==0.162.3
+uvicorn==0.54.0
+asyncpg==0.32.0
+pyjwt==2.15.1
+fastmcp==4.1.7
