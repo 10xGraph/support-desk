@@ -71,7 +71,7 @@
     "token_revocation": true
   },
   "observability": {
-    "level": "standard",
+    "level": "full",
     "phoenix": {
       "enabled": true,
       "project": "support-desk"

@@ -1,9 +1,9 @@
 # phoenix-demo
 
-A multi-tenant support desk built on 10xGraph, with the full stack in Docker: Caddy (TLS), API,
-demo_server (company data), Postgres, Redis, RabbitMQ (events), Phoenix (AI traces), Prometheus and
-Grafana (metrics). The
-image installs `10xgraph` and `10xgraph-api` 1.0.0rc5 from PyPI. Tenants are `acme` and `globex`
+A multi-tenant support desk built on 10xGraph, with the full stack in Docker: API, demo_server
+(company data), Postgres, Redis, RabbitMQ (events), Phoenix (AI traces), Prometheus and Grafana
+(metrics). For now the image installs `10xgraph` and `10xgraph-api` from the local checkouts
+`../agentflow` and `../agentflow-api` (see `Dockerfile`). Tenants are `acme` and `globex`
 (token claim `org_id`).
 
 ## How it works
@@ -21,16 +21,18 @@ customer's own API token is never forwarded. See
 Refunds up to $100 go through at once. Larger ones are stored as pending until staff approve them
 (see "Approving a refund").
 
-Only Caddy (ports 80 and 443) is public. Everything else is on the internal Docker network.
+Local testing setup: there is no reverse proxy yet, and every port binds to `127.0.0.1`.
 
 ## Start
 
-1. Create `.env` from the template and fill in the two secrets (see `.env.example` for every variable):
+1. Create `.env` and fill in the secrets (see `.env.example` for every variable):
 
    ```bash
    cp .env.example .env
-   .venv/bin/python scripts/make_secret.py   # writes JWT_SECRET_KEY and JWT_ALGORITHM
-   # then set GOOGLE_API_KEY in .env
+   .venv/bin/python deploy/scripts/make_secret.py   # writes JWT_SECRET_KEY and JWT_ALGORITHM
+   # then set GOOGLE_API_KEY, POSTGRES_PASSWORD, RABBITMQ_PASSWORD, GRAFANA_ADMIN_PASSWORD,
+   # PGADMIN_PASSWORD,
+   # and the same passwords in DATABASE_URL and BROKER_URL
    ```
 
 2. Start everything:
@@ -39,29 +41,14 @@ Only Caddy (ports 80 and 443) is public. Everything else is on the internal Dock
    docker compose up --build
    ```
 
-   For local scripts that need Postgres (`127.0.0.1:5433`), Redis (`6380`), RabbitMQ AMQP (`5672`)
-   or the API directly (`8000`), add the dev override:
+   Postgres starts, `seed` loads the knowledge base and exits, then the API starts on
+   http://localhost:8000 (`curl http://localhost:8000/ping`).
+
+3. Make a token per user, role and tenant (prints only the token; reads `.env`):
 
    ```bash
-   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
-   ```
-
-3. Open https://localhost. Caddy signs a local certificate with its own CA, so the browser warns.
-   Accept it, or trust the CA once:
-
-   ```bash
-   docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
-   # then import caddy-root.crt into your browser or system trust store
-   ```
-
-   With `curl`, use `-k`: `curl -k https://localhost/ping`.
-
-4. Make a token per user, role and tenant (prints only the token; reads `.env`):
-
-   ```bash
-   .venv/bin/python deploy/scripts/make_token.py alice --name "Alice Chen" --role member --org acme
-   .venv/bin/python deploy/scripts/make_token.py sam --name "Sam Lee" --role support --org globex --ttl-hours 2
-   curl -k -H "Authorization: Bearer $TOKEN" https://localhost/v1/me   # shows role, tenant, reach
+   TOKEN=$(.venv/bin/python deploy/scripts/make_token.py alice --name "Alice Chen" --role member --org acme)
+   curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/v1/me   # shows role, tenant, reach
    ```
 
    | Role | Reach | Can do |
@@ -71,15 +58,20 @@ Only Caddy (ports 80 and 443) is public. Everything else is on the internal Dock
    | `org_admin` | whole tenant | support, plus delete, graph read and fix |
    | `admin` | all tenants | everything |
 
-5. Playground: open https://play.10xgraph.com, set the API URL to `https://localhost` (or your
-   `SITE_ADDRESS`), paste a token and chat. The browser must trust the Caddy certificate for the
-   hosted playground to reach a local server, so do step 3 first.
+4. Playground: open https://play.10xgraph.com, set the API URL to `http://localhost:8000`, paste
+   a token and chat.
+
+5. Evals run on the host against the stack (they use the `127.0.0.1` URLs in `.env`):
+
+   ```bash
+   .venv/bin/10xgraph eval evals/support_agent_eval.py
+   ```
 
 ## Approving a refund
 
 Refunds above $100 stay pending on demo_server; the agent tells the customer they wait for staff.
 A user with role `support`, `org_admin` or `admin` approves one with the same kind of token.
-demo_server is not behind Caddy; with the dev override it listens on `127.0.0.1:8100`:
+demo_server listens on `127.0.0.1:8100`:
 
 ```bash
 STAFF_TOKEN=$(.venv/bin/python deploy/scripts/make_token.py sam --name "Sam Lee" --role support --org acme)
@@ -89,25 +81,28 @@ curl -X POST -H "Authorization: Bearer $STAFF_TOKEN" http://127.0.0.1:8100/v1/re
 
 The route, the tenant check and the other endpoints are documented in `demo_server/README.md`.
 
-## Deploy on a server
+## Background jobs
 
-Set `SITE_ADDRESS` to your domain (DNS A record to the server, ports 80 and 443 open) and Caddy
-gets a Let's Encrypt certificate on its own. Replace every password in `.env`. Do not use
-`docker-compose.dev.yml`. Firewall everything except 22, 80 and 443.
-
-## Internal dashboards (SSH tunnel)
-
-These bind to `127.0.0.1` on the host only. On a server, reach them through a tunnel:
+The `worker` and `scheduler` services run the API image with TaskIQ over RabbitMQ (status and
+results in Redis); `worker` in `10xgraph.json` lists the task modules (`worker/tasks.py`). The
+image has no `10xgraph` command, so they run `taskiq worker` and `taskiq scheduler`, which is what
+`10xgraph worker` and `10xgraph scheduler` run. Run exactly one scheduler.
 
 ```bash
-ssh -L 6006:127.0.0.1:6006 -L 3001:127.0.0.1:3001 -L 15672:127.0.0.1:15672 -L 9090:127.0.0.1:9090 user@server
+curl -X POST http://localhost:8000/v1/tasks/summarize_thread \
+  -H "Authorization: Bearer $TOKEN" -H 'content-type: application/json' \
+  -d '{"kwargs": {"thread_id": "<thread id>"}}'
+docker compose logs -f worker
 ```
 
-| What | URL (through the tunnel) | Login |
+## Dashboards
+
+| What | URL | Login |
 |---|---|---|
-| Phoenix (AI traces), project `support-desk` | http://127.0.0.1:6006 | `admin@localhost` / `admin` on first login, then a new password |
-| Grafana, dashboard "10xGraph" | http://127.0.0.1:3001 | `admin` / `GRAFANA_ADMIN_PASSWORD` (anonymous access is off) |
+| Phoenix (AI traces), project `support-desk` | http://127.0.0.1:6006 | none (auth off locally) |
+| Grafana, dashboard "10xGraph" | http://127.0.0.1:3001 | `admin` / `GRAFANA_ADMIN_PASSWORD` |
 | RabbitMQ management, queue `tenxgraph.events.demo` | http://127.0.0.1:15672 | `tenxgraph` / `RABBITMQ_PASSWORD` |
+| pgAdmin, server `support-desk` | http://127.0.0.1:5050 | `PGADMIN_EMAIL` / `PGADMIN_PASSWORD`; then `POSTGRES_PASSWORD` for the database |
 | Prometheus | http://127.0.0.1:9090 | none; type `{job="10xgraph-api"}` in the Graph tab to list API metrics |
 
 Audit events and JSON application logs go to the API container's stdout:

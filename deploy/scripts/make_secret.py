@@ -1,6 +1,6 @@
 """Generate a JWT secret and save it in .env (JWT_SECRET_KEY, JWT_ALGORITHM=HS256).
 
-Usage: .venv/bin/python scripts/make_secret.py [--force]
+Usage: .venv/bin/python deploy/scripts/make_secret.py [--force]
 
 Creates .env when missing. Other lines in .env are kept. An existing JWT_SECRET_KEY is kept
 unless --force is given (a new secret makes every token issued before it invalid).
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 
-ENV = Path(__file__).resolve().parent.parent / ".env"
+ENV = Path(__file__).resolve().parents[2] / ".env"  # project root
 
 
 def set_key(lines: list[str], key: str, value: str, replace: bool) -> tuple[list[str], bool]:

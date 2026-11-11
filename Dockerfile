@@ -20,6 +20,18 @@ ENV PATH="/opt/venv/bin:$PATH"
 #     && apt-get install -y --no-install-recommends build-essential \
 #     && rm -rf /var/lib/apt/lists/*
 
+# Local test build: 10xgraph and 10xgraph-api from the sibling checkouts, passed in as the
+# build contexts "core" and "api" (docker-compose.yml). Only the package files are copied.
+# The pip install below then finds both installed and adds their extras' dependencies.
+# Drop these lines to install the PyPI release instead.
+COPY --from=core pyproject.toml README.md LICENSE MANIFEST.in /src/core/
+COPY --from=core tenxgraph /src/core/tenxgraph
+COPY --from=core agentflow /src/core/agentflow
+COPY --from=api pyproject.toml README.md LICENSE MANIFEST.in /src/api/
+COPY --from=api tenxgraph_api /src/api/tenxgraph_api
+COPY --from=api agentflow_cli /src/api/agentflow_cli
+RUN pip install /src/core /src/api
+
 # Install exactly the [project].dependencies listed in pyproject.toml.
 # pip cannot read that list on its own without installing the project as a
 # package, so it is printed to a temporary file inside this builder stage.
