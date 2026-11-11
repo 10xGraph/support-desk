@@ -59,7 +59,8 @@ ReactAgent(
     system_prompt: list[dict] | None = None,
     tools: Iterable[Callable] | None = None,
     client: Any = None,                    # FastMCP client for MCP tools
-    pass_user_info_to_mcp: bool = False,
+    pass_user_info_to_mcp: bool = False,         # unsigned metadata, trusted internal servers only
+    mcp_auth: Any = None,                  # async (MCPAuthContext) -> dict of headers per MCP call
     extra_messages: list[Message] | None = None,
     trim_context: bool = False,
     tools_tags: set[str] | None = None,
@@ -87,9 +88,31 @@ from fastmcp.client.transports import StreamableHttpTransport
 agent = ReactAgent(
     model="gpt-4o",
     client=Client(StreamableHttpTransport(MCP_URL, auth=MCP_TOKEN)),
-    pass_user_info_to_mcp=True,
+    pass_user_info_to_mcp=True,   # unsigned metadata: trusted internal server only
 )
 ```
+
+`pass_user_info_to_mcp=True` sends the user as unsigned request metadata the server cannot verify. For a server that enforces per-user or per-tenant access, use `mcp_auth` instead:
+
+```python
+import os, time
+import jwt  # pip install pyjwt[crypto]
+from tenxgraph.core.graph.tool_node import MCPAuthContext
+
+async def mcp_auth(ctx: MCPAuthContext) -> dict[str, str]:
+    # ctx: identity, credential, tool_name, server, thread_id, run_id
+    now = int(time.time())
+    token = jwt.encode(
+        {"iss": "my-agent", "aud": "my-mcp-server", "sub": ctx.identity.user_id,
+         "act": {"sub": "my-agent"}, "iat": now, "exp": now + 60},
+        os.environ["MCP_SIGNING_KEY"], algorithm="HS256",
+    )
+    return {"Authorization": f"Bearer {token}"}
+
+agent = ReactAgent(model="gpt-4o", client=Client(StreamableHttpTransport(MCP_URL)), mcp_auth=mcp_auth)
+```
+
+The server verifies the signature, `aud` and `exp`, and takes the user from the token.
 
 Server side, read the user from request metadata, never from a tool argument:
 
@@ -131,7 +154,7 @@ from tenxgraph.runtime.publisher import ConsolePublisher
 app = ReactAgent(
     model="gpt-4o",
     client=Client(StreamableHttpTransport(MCP_URL, auth=MCP_TOKEN)),
-    pass_user_info_to_mcp=True,
+    mcp_auth=mcp_auth,            # per-user access control; see above
     system_prompt=[{"role": "system", "content": "You are a support agent. Use the tools."}],
     publisher=ConsolePublisher(),
     trim_context=True,
@@ -139,6 +162,8 @@ app = ReactAgent(
 ```
 
 The server tool is `my_tickets` above. All argument names match `ReactAgent.__init__` and `compile()`.
+
+To authenticate each MCP call as the signed-in user, add `mcp_auth=my_mcp_auth` (an async function returning headers, see "Authenticate MCP calls as the user" in agents-and-tools.md). `PlanActReflectAgent`, `StructuredOutputAgent` and `AudioAgent` take it too. Needs fastmcp >= 4.1.7 and an HTTP transport.
 
 ---
 

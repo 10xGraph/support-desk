@@ -36,11 +36,17 @@ KB_COLLECTION = "knowledge_base"
 KB_MEMORY_TYPE = "semantic"
 KB_CATEGORY = "kb"
 
+# Postgres connections per pool, in every process that loads this module (API workers, task
+# workers, the seed step, evals). asyncpg's default keeps 10 open per pool even when idle, which
+# fills Postgres' 100 connections once the API, a worker and an eval run side by side.
+PG_POOL_CONFIG = {"min_size": 1, "max_size": 5}
+
 # Threads: Postgres keeps every thread, Redis caches the hot ones.
 checkpointer = PgCheckpointer(
     postgres_dsn=os.getenv("DATABASE_URL"),
     redis_url=os.getenv("REDIS_URL"),
     tenant_columns=TENANT_COLUMNS,
+    pool_config=PG_POOL_CONFIG,
 )
 
 # Knowledge base in the same Postgres (pgvector). 768 dimensions: pgvector's HNSW index takes
@@ -49,6 +55,7 @@ store = PgVectorStore(
     embedding=GoogleEmbedding(output_dimensionality=768),
     dsn=os.getenv("DATABASE_URL"),
     tenant_columns=TENANT_COLUMNS,
+    pool_config=PG_POOL_CONFIG,
 )
 
 # Graph events (node starts, tool calls, results) to RabbitMQ exchange "tenxgraph.events". The

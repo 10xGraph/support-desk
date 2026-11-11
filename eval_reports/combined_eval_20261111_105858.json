@@ -1,0 +1,2323 @@
+{
+  "eval_set_id": "combined_eval",
+  "eval_set_name": "Combined Evaluation",
+  "results": [
+    {
+      "eval_id": "greets_by_name",
+      "name": "",
+      "passed": true,
+      "criterion_results": [
+        {
+          "criterion": "tool_trajectory_avg_score",
+          "score": 1.0,
+          "passed": true,
+          "threshold": 1.0,
+          "details": {
+            "reason": "Matched 100% of expected tools. Expected [], got [].",
+            "actual_trajectory": [],
+            "expected_trajectory": [],
+            "match_type": "IN_ORDER",
+            "check_args": true
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        {
+          "criterion": "response_match_score",
+          "score": 0.9333333333333332,
+          "passed": true,
+          "threshold": 0.7,
+          "details": {
+            "samples": 3,
+            "individual_scores": [
+              0.9,
+              1.0,
+              0.9
+            ],
+            "reasonings": [
+              "The actual response adds a last name 'Chen' to 'Alice'. This is a minor difference in information but does not change the core meaning or intent of the greeting and offer of help. The core message remains perfectly intact.",
+              "The actual response is semantically equivalent to the expected response. Adding a last name ('Chen') to 'Alice' does not change the core meaning of greeting Alice and offering help. It's a more specific identification, but the intent and information conveyed are identical.",
+              "The actual response adds a last name 'Chen' to 'Alice', which is a minor difference. However, the core meaning of greeting 'Alice' and offering assistance remains perfectly intact."
+            ],
+            "judge_model": "gemini-2.5-flash",
+            "reason": "The actual response adds a last name 'Chen' to 'Alice', which is a minor difference. However, the core meaning of greeting 'Alice' and offering assistance remains perfectly intact."
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 684,
+            "output_tokens": 195,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 879
+          }
+        }
+      ],
+      "actual_trajectory": [
+        {
+          "step_type": "node",
+          "name": "__start__",
+          "args": {},
+          "timestamp": 1794372771.2279422,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372773.6928966,
+          "metadata": {
+            "event_type": "end"
+          }
+        }
+      ],
+      "actual_tool_calls": [],
+      "actual_response": "Hello Alice Chen, how can I help you today?",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hi"
+        }
+      ],
+      "node_responses": [
+        {
+          "node_name": "__start__",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "Hi"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372771.2279422,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "Hi"
+            }
+          ],
+          "response_text": "Hello Alice Chen, how can I help you today?",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372773.6928966,
+          "token_usage": {
+            "input_tokens": 776,
+            "output_tokens": 11,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        }
+      ],
+      "node_visits": [
+        "__start__",
+        "MAIN"
+      ],
+      "duration_seconds": 10.930248022079468,
+      "error": null,
+      "metadata": {},
+      "turn_results": [
+        {
+          "turn_index": 0,
+          "user_input": "Hi",
+          "agent_response": "Hello Alice Chen, how can I help you today?",
+          "tool_calls": [],
+          "node_visits": [
+            "__start__",
+            "MAIN"
+          ],
+          "trajectory_steps": 2
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 1460,
+        "output_tokens": 206,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 1666
+      },
+      "agent_token_usage": {
+        "input_tokens": 776,
+        "output_tokens": 11,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 787
+      },
+      "node_details": [],
+      "expected": {
+        "response": "Hello Alice, how can I help you today?",
+        "tool_calls": null,
+        "node_order": null,
+        "input": "Hi"
+      }
+    },
+    {
+      "eval_id": "order_status",
+      "name": "",
+      "passed": false,
+      "criterion_results": [
+        {
+          "criterion": "tool_trajectory_avg_score",
+          "score": 1.0,
+          "passed": true,
+          "threshold": 1.0,
+          "details": {
+            "reason": "Matched 100% of expected tools. Expected ['lookup_order'], got ['lookup_order'].",
+            "actual_trajectory": [
+              {
+                "name": "lookup_order",
+                "args": {
+                  "order_id": "A-1003"
+                },
+                "call_id": "a1acd5a0-7ccf-4537-975a-910b17c03b32",
+                "result": "message_id='3d6ecac0-1f30-4008-a5fc-5350beaca8a7' role='tool' content=[ToolResultBlock(type='tool_result', call_id='a1acd5a0-7ccf-4537-975a-910b17c03b32', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1003: USB-C dock, $89.50, shipped.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372784.14346 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1003'}, 'tool_call_id': 'a1acd5a0-7ccf-4537-975a-910b17c03b32'} usages=None raw=None parsed_content=None"
+              }
+            ],
+            "expected_trajectory": [
+              {
+                "name": "lookup_order",
+                "args": {
+                  "order_id": "A-1003"
+                },
+                "call_id": null,
+                "result": null
+              }
+            ],
+            "match_type": "IN_ORDER",
+            "check_args": true
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        {
+          "criterion": "response_match_score",
+          "score": 0.6499999999999999,
+          "passed": false,
+          "threshold": 0.7,
+          "details": {
+            "samples": 2,
+            "individual_scores": [
+              0.6,
+              0.7
+            ],
+            "reasonings": [
+              "The actual response conveys the core information that order A-1003 for the USB-C dock has shipped. However, it omits the price ($89.50) which was included in the expected response. The addition of 'Alice' is extra information but does not detract from the core meaning or contradict the expected response. The missing price constitutes a partial loss of key information.",
+              "The actual response conveys the core information that order A-1003 for the USB-C dock has shipped, which matches the expected response. However, the actual response omits the price of the item ($89.50) which was present in the expected response. The addition of 'Alice' in the actual response is a minor difference that doesn't affect the core meaning."
+            ],
+            "judge_model": "gemini-2.5-flash",
+            "reason": "The actual response conveys the core information that order A-1003 for the USB-C dock has shipped, which matches the expected response. However, the actual response omits the price of the item ($89.50) which was present in the expected response. The addition of 'Alice' in the actual response is a minor difference that doesn't affect the core meaning."
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 522,
+            "output_tokens": 200,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 722
+          }
+        }
+      ],
+      "actual_trajectory": [
+        {
+          "step_type": "node",
+          "name": "__start__",
+          "args": {},
+          "timestamp": 1794372782.0680714,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372784.0747771,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "lookup_order",
+          "args": {
+            "order_id": "A-1003"
+          },
+          "timestamp": 1794372784.1435082,
+          "metadata": {
+            "tool_call_id": "a1acd5a0-7ccf-4537-975a-910b17c03b32"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372786.4871671,
+          "metadata": {
+            "event_type": "end"
+          }
+        }
+      ],
+      "actual_tool_calls": [
+        {
+          "name": "lookup_order",
+          "args": {
+            "order_id": "A-1003"
+          },
+          "call_id": "a1acd5a0-7ccf-4537-975a-910b17c03b32",
+          "result": "message_id='3d6ecac0-1f30-4008-a5fc-5350beaca8a7' role='tool' content=[ToolResultBlock(type='tool_result', call_id='a1acd5a0-7ccf-4537-975a-910b17c03b32', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1003: USB-C dock, $89.50, shipped.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372784.14346 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1003'}, 'tool_call_id': 'a1acd5a0-7ccf-4537-975a-910b17c03b32'} usages=None raw=None parsed_content=None"
+        }
+      ],
+      "actual_response": "Alice, your order A-1003 for the USB-C dock has shipped.",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Where is my order A-1003?"
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Alice Chen,\n\n"
+        },
+        {
+          "role": "tool",
+          "content": "[{\"type\": \"text\", \"text\": \"Order A-1003: USB-C dock, $89.50, shipped.\", \"annotations\": null, \"meta\": null}]"
+        }
+      ],
+      "node_responses": [
+        {
+          "node_name": "__start__",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "Where is my order A-1003?"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372782.0680714,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "Where is my order A-1003?"
+            }
+          ],
+          "response_text": "Hello Alice Chen,\n\n",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372784.0747771,
+          "token_usage": {
+            "input_tokens": 786,
+            "output_tokens": 27,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "Where is my order A-1003?"
+            },
+            {
+              "role": "assistant",
+              "content": "Hello Alice Chen,\n\n"
+            },
+            {
+              "role": "tool",
+              "content": "[{\"type\": \"text\", \"text\": \"Order A-1003: USB-C dock, $89.50, shipped.\", \"annotations\": null, \"meta\": null}]"
+            }
+          ],
+          "response_text": "Alice, your order A-1003 for the USB-C dock has shipped.",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372786.4871671,
+          "token_usage": {
+            "input_tokens": 870,
+            "output_tokens": 19,
+            "cache_read_tokens": 677,
+            "cache_creation_tokens": 0
+          }
+        }
+      ],
+      "node_visits": [
+        "__start__",
+        "MAIN",
+        "MAIN"
+      ],
+      "duration_seconds": 18.576334476470947,
+      "error": null,
+      "metadata": {},
+      "turn_results": [
+        {
+          "turn_index": 0,
+          "user_input": "Where is my order A-1003?",
+          "agent_response": "Alice, your order A-1003 for the USB-C dock has shipped.",
+          "tool_calls": [
+            {
+              "name": "lookup_order",
+              "args": {
+                "order_id": "A-1003"
+              },
+              "call_id": "a1acd5a0-7ccf-4537-975a-910b17c03b32",
+              "result": "message_id='3d6ecac0-1f30-4008-a5fc-5350beaca8a7' role='tool' content=[ToolResultBlock(type='tool_result', call_id='a1acd5a0-7ccf-4537-975a-910b17c03b32', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1003: USB-C dock, $89.50, shipped.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372784.14346 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1003'}, 'tool_call_id': 'a1acd5a0-7ccf-4537-975a-910b17c03b32'} usages=None raw=None parsed_content=None"
+            }
+          ],
+          "node_visits": [
+            "__start__",
+            "MAIN",
+            "MAIN"
+          ],
+          "trajectory_steps": 4
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 2178,
+        "output_tokens": 246,
+        "cache_read_tokens": 677,
+        "cache_creation_tokens": 0,
+        "total_tokens": 2424
+      },
+      "agent_token_usage": {
+        "input_tokens": 1656,
+        "output_tokens": 46,
+        "cache_read_tokens": 677,
+        "cache_creation_tokens": 0,
+        "total_tokens": 1702
+      },
+      "node_details": [],
+      "expected": {
+        "response": "Your order A-1003, a USB-C dock for $89.50, has shipped.",
+        "tool_calls": [
+          {
+            "name": "lookup_order",
+            "args": {
+              "order_id": "A-1003"
+            }
+          }
+        ],
+        "node_order": null,
+        "input": "Where is my order A-1003?"
+      }
+    },
+    {
+      "eval_id": "large_refund_is_pending",
+      "name": "",
+      "passed": true,
+      "criterion_results": [
+        {
+          "criterion": "tool_trajectory_avg_score",
+          "score": 1.0,
+          "passed": true,
+          "threshold": 1.0,
+          "details": {
+            "reason": "Matched 100% of expected tools. Expected ['lookup_order'], got ['lookup_order', 'refund_order'].",
+            "actual_trajectory": [
+              {
+                "name": "lookup_order",
+                "args": {
+                  "order_id": "A-1002"
+                },
+                "call_id": "12e5baea-ba59-4f9e-ac11-62d9ce266191",
+                "result": "message_id='4471a65a-f3f5-4887-96f1-28e78b064c7a' role='tool' content=[ToolResultBlock(type='tool_result', call_id='12e5baea-ba59-4f9e-ac11-62d9ce266191', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1002: 27-inch monitor, $250.00, delivered.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372802.914233 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1002'}, 'tool_call_id': '12e5baea-ba59-4f9e-ac11-62d9ce266191'} usages=None raw=None parsed_content=None"
+              },
+              {
+                "name": "refund_order",
+                "args": {
+                  "order_id": "A-1002",
+                  "amount": 250,
+                  "reason": "cracked screen"
+                },
+                "call_id": "69a94244-c472-49e8-b45c-4b166dd027f2",
+                "result": "message_id='7b918c9b-a84b-4425-b708-b0f0f802719f' role='tool' content=[ToolResultBlock(type='tool_result', call_id='69a94244-c472-49e8-b45c-4b166dd027f2', name='refund_order', output=[{'type': 'text', 'text': 'Refund of $250.00 for order A-1002 is pending staff approval (#1).', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372805.684729 metadata={'function_name': 'refund_order', 'function_argument': {'order_id': 'A-1002', 'amount': 250, 'reason': 'cracked screen'}, 'tool_call_id': '69a94244-c472-49e8-b45c-4b166dd027f2'} usages=None raw=None parsed_content=None"
+              }
+            ],
+            "expected_trajectory": [
+              {
+                "name": "lookup_order",
+                "args": {
+                  "order_id": "A-1002"
+                },
+                "call_id": null,
+                "result": null
+              }
+            ],
+            "match_type": "IN_ORDER",
+            "check_args": true
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        {
+          "criterion": "response_match_score",
+          "score": 0.9,
+          "passed": true,
+          "threshold": 0.7,
+          "details": {
+            "samples": 3,
+            "individual_scores": [
+              0.9,
+              0.9,
+              0.9
+            ],
+            "reasonings": [
+              "The actual response conveys almost all the same key information as the expected response: the refund amount, the order number, and that it is pending staff approval. The only minor difference is the absence of the specific timeline ('usually within one business day') for approval. However, the core meaning that the refund is in progress but not yet finalized is perfectly preserved.",
+              "The ACTUAL response conveys almost all the key information from the EXPECTED response, including the refund amount, order ID, and the pending approval status. The only minor difference is that the ACTUAL response omits the specific timeline for approval ('usually within one business day') mentioned in the EXPECTED response. However, it adds a helpful detail about notification once processed. The core meaning is preserved.",
+              "The actual response conveys almost all the same key information as the expected response, including the refund amount, order number, and pending approval status. The only minor difference is that the actual response omits the 'usually within one business day' timeline for approval, replacing it with a promise of notification upon processing."
+            ],
+            "judge_model": "gemini-2.5-flash",
+            "reason": "The actual response conveys almost all the same key information as the expected response, including the refund amount, order number, and pending approval status. The only minor difference is that the actual response omits the 'usually within one business day' timeline for approval, replacing it with a promise of notification upon processing."
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 894,
+            "output_tokens": 269,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 1163
+          }
+        }
+      ],
+      "actual_trajectory": [
+        {
+          "step_type": "node",
+          "name": "__start__",
+          "args": {},
+          "timestamp": 1794372800.6460702,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372802.88132,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "lookup_order",
+          "args": {
+            "order_id": "A-1002"
+          },
+          "timestamp": 1794372802.914279,
+          "metadata": {
+            "tool_call_id": "12e5baea-ba59-4f9e-ac11-62d9ce266191"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372805.642084,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "refund_order",
+          "args": {
+            "order_id": "A-1002",
+            "amount": 250,
+            "reason": "cracked screen"
+          },
+          "timestamp": 1794372805.6847715,
+          "metadata": {
+            "tool_call_id": "69a94244-c472-49e8-b45c-4b166dd027f2"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372809.26816,
+          "metadata": {
+            "event_type": "end"
+          }
+        }
+      ],
+      "actual_tool_calls": [
+        {
+          "name": "lookup_order",
+          "args": {
+            "order_id": "A-1002"
+          },
+          "call_id": "12e5baea-ba59-4f9e-ac11-62d9ce266191",
+          "result": "message_id='4471a65a-f3f5-4887-96f1-28e78b064c7a' role='tool' content=[ToolResultBlock(type='tool_result', call_id='12e5baea-ba59-4f9e-ac11-62d9ce266191', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1002: 27-inch monitor, $250.00, delivered.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372802.914233 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1002'}, 'tool_call_id': '12e5baea-ba59-4f9e-ac11-62d9ce266191'} usages=None raw=None parsed_content=None"
+        },
+        {
+          "name": "refund_order",
+          "args": {
+            "order_id": "A-1002",
+            "amount": 250,
+            "reason": "cracked screen"
+          },
+          "call_id": "69a94244-c472-49e8-b45c-4b166dd027f2",
+          "result": "message_id='7b918c9b-a84b-4425-b708-b0f0f802719f' role='tool' content=[ToolResultBlock(type='tool_result', call_id='69a94244-c472-49e8-b45c-4b166dd027f2', name='refund_order', output=[{'type': 'text', 'text': 'Refund of $250.00 for order A-1002 is pending staff approval (#1).', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372805.684729 metadata={'function_name': 'refund_order', 'function_argument': {'order_id': 'A-1002', 'amount': 250, 'reason': 'cracked screen'}, 'tool_call_id': '69a94244-c472-49e8-b45c-4b166dd027f2'} usages=None raw=None parsed_content=None"
+        }
+      ],
+      "actual_response": "Alice, the refund of $250.00 for your order A-1002 is currently pending staff approval. You will be notified once it has been processed.",
+      "messages": [
+        {
+          "role": "user",
+          "content": "My monitor from order A-1002 arrived with a cracked screen. Refund it please."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Alice Chen, I'm sorry to hear your monitor arrived with a cracked screen. I can help you with a refund.\n\nFirst, I need to look up the details of your order A-1002.\n"
+        },
+        {
+          "role": "tool",
+          "content": "[{\"type\": \"text\", \"text\": \"Order A-1002: 27-inch monitor, $250.00, delivered.\", \"annotations\": null, \"meta\": null}]"
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "[{\"type\": \"text\", \"text\": \"Refund of $250.00 for order A-1002 is pending staff approval (#1).\", \"annotations\": null, \"meta\": null}]"
+        }
+      ],
+      "node_responses": [
+        {
+          "node_name": "__start__",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My monitor from order A-1002 arrived with a cracked screen. Refund it please."
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372800.6460702,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My monitor from order A-1002 arrived with a cracked screen. Refund it please."
+            }
+          ],
+          "response_text": "Hello Alice Chen, I'm sorry to hear your monitor arrived with a cracked screen. I can help you with a refund.\n\nFirst, I need to look up the details of your order A-1002.\n",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372802.88132,
+          "token_usage": {
+            "input_tokens": 795,
+            "output_tokens": 69,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My monitor from order A-1002 arrived with a cracked screen. Refund it please."
+            },
+            {
+              "role": "assistant",
+              "content": "Hello Alice Chen, I'm sorry to hear your monitor arrived with a cracked screen. I can help you with a refund.\n\nFirst, I need to look up the details of your order A-1002.\n"
+            },
+            {
+              "role": "tool",
+              "content": "[{\"type\": \"text\", \"text\": \"Order A-1002: 27-inch monitor, $250.00, delivered.\", \"annotations\": null, \"meta\": null}]"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372805.642084,
+          "token_usage": {
+            "input_tokens": 924,
+            "output_tokens": 36,
+            "cache_read_tokens": 691,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My monitor from order A-1002 arrived with a cracked screen. Refund it please."
+            },
+            {
+              "role": "assistant",
+              "content": "Hello Alice Chen, I'm sorry to hear your monitor arrived with a cracked screen. I can help you with a refund.\n\nFirst, I need to look up the details of your order A-1002.\n"
+            },
+            {
+              "role": "tool",
+              "content": "[{\"type\": \"text\", \"text\": \"Order A-1002: 27-inch monitor, $250.00, delivered.\", \"annotations\": null, \"meta\": null}]"
+            },
+            {
+              "role": "assistant",
+              "content": ""
+            },
+            {
+              "role": "tool",
+              "content": "[{\"type\": \"text\", \"text\": \"Refund of $250.00 for order A-1002 is pending staff approval (#1).\", \"annotations\": null, \"meta\": null}]"
+            }
+          ],
+          "response_text": "Alice, the refund of $250.00 for your order A-1002 is currently pending staff approval. You will be notified once it has been processed.",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372809.26816,
+          "token_usage": {
+            "input_tokens": 1019,
+            "output_tokens": 37,
+            "cache_read_tokens": 706,
+            "cache_creation_tokens": 0
+          }
+        }
+      ],
+      "node_visits": [
+        "__start__",
+        "MAIN",
+        "MAIN",
+        "MAIN"
+      ],
+      "duration_seconds": 21.39215111732483,
+      "error": null,
+      "metadata": {},
+      "turn_results": [
+        {
+          "turn_index": 0,
+          "user_input": "My monitor from order A-1002 arrived with a cracked screen. Refund it please.",
+          "agent_response": "Alice, the refund of $250.00 for your order A-1002 is currently pending staff approval. You will be notified once it has been processed.",
+          "tool_calls": [
+            {
+              "name": "lookup_order",
+              "args": {
+                "order_id": "A-1002"
+              },
+              "call_id": "12e5baea-ba59-4f9e-ac11-62d9ce266191",
+              "result": "message_id='4471a65a-f3f5-4887-96f1-28e78b064c7a' role='tool' content=[ToolResultBlock(type='tool_result', call_id='12e5baea-ba59-4f9e-ac11-62d9ce266191', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1002: 27-inch monitor, $250.00, delivered.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372802.914233 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1002'}, 'tool_call_id': '12e5baea-ba59-4f9e-ac11-62d9ce266191'} usages=None raw=None parsed_content=None"
+            },
+            {
+              "name": "refund_order",
+              "args": {
+                "order_id": "A-1002",
+                "amount": 250,
+                "reason": "cracked screen"
+              },
+              "call_id": "69a94244-c472-49e8-b45c-4b166dd027f2",
+              "result": "message_id='7b918c9b-a84b-4425-b708-b0f0f802719f' role='tool' content=[ToolResultBlock(type='tool_result', call_id='69a94244-c472-49e8-b45c-4b166dd027f2', name='refund_order', output=[{'type': 'text', 'text': 'Refund of $250.00 for order A-1002 is pending staff approval (#1).', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372805.684729 metadata={'function_name': 'refund_order', 'function_argument': {'order_id': 'A-1002', 'amount': 250, 'reason': 'cracked screen'}, 'tool_call_id': '69a94244-c472-49e8-b45c-4b166dd027f2'} usages=None raw=None parsed_content=None"
+            }
+          ],
+          "node_visits": [
+            "__start__",
+            "MAIN",
+            "MAIN",
+            "MAIN"
+          ],
+          "trajectory_steps": 6
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 3632,
+        "output_tokens": 411,
+        "cache_read_tokens": 1397,
+        "cache_creation_tokens": 0,
+        "total_tokens": 4043
+      },
+      "agent_token_usage": {
+        "input_tokens": 2738,
+        "output_tokens": 142,
+        "cache_read_tokens": 1397,
+        "cache_creation_tokens": 0,
+        "total_tokens": 2880
+      },
+      "node_details": [],
+      "expected": {
+        "response": "The $250.00 refund for order A-1002 is waiting for staff approval, usually within one business day. It is not paid yet.",
+        "tool_calls": [
+          {
+            "name": "lookup_order",
+            "args": {
+              "order_id": "A-1002"
+            }
+          }
+        ],
+        "node_order": null,
+        "input": "My monitor from order A-1002 arrived with a cracked screen. Refund it please."
+      }
+    },
+    {
+      "eval_id": "headset_pairing_from_kb",
+      "name": "",
+      "passed": false,
+      "criterion_results": [
+        {
+          "criterion": "tool_trajectory_avg_score",
+          "score": 1.0,
+          "passed": true,
+          "threshold": 1.0,
+          "details": {
+            "reason": "Matched 100% of expected tools. Expected ['agent_memory_tool'], got ['agent_memory_tool', 'create_ticket'].",
+            "actual_trajectory": [
+              {
+                "name": "agent_memory_tool",
+                "args": {
+                  "query": "pair wireless headset",
+                  "category": "product_info"
+                },
+                "call_id": "b80d0991-0dec-4592-9f51-37365a88b580",
+                "result": "{\"error\": \"sorry, too many clients already\"}"
+              },
+              {
+                "name": "create_ticket",
+                "args": {
+                  "summary": "Customer needs help pairing wireless headset."
+                },
+                "call_id": "f6c535ab-e545-4e29-ad37-33cf45f5083c",
+                "result": "message_id='fd0de499-6ed3-47f0-9a49-cd887e032d02' role='tool' content=[ToolResultBlock(type='tool_result', call_id='f6c535ab-e545-4e29-ad37-33cf45f5083c', name='create_ticket', output=[{'type': 'text', 'text': 'Ticket ACME-1001 created.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372828.096926 metadata={'function_name': 'create_ticket', 'function_argument': {'summary': 'Customer needs help pairing wireless headset.'}, 'tool_call_id': 'f6c535ab-e545-4e29-ad37-33cf45f5083c'} usages=None raw=None parsed_content=None"
+              }
+            ],
+            "expected_trajectory": [
+              {
+                "name": "agent_memory_tool",
+                "args": {},
+                "call_id": null,
+                "result": null
+              }
+            ],
+            "match_type": "IN_ORDER",
+            "check_args": true
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        {
+          "criterion": "response_match_score",
+          "score": 0.0,
+          "passed": false,
+          "threshold": 0.7,
+          "details": {
+            "samples": 3,
+            "individual_scores": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "reasonings": [
+              "The actual response is completely irrelevant to the question and the expected response. The question is about pairing a wireless headset, while the actual response is about checking an order status.",
+              "The actual response is completely irrelevant to the question and the expected response. It addresses checking an order status, while the expected response provides instructions for pairing a wireless headset. There is no semantic overlap whatsoever.",
+              "The actual response is completely irrelevant to the question and the expected response. The question is about pairing a wireless headset, while the actual response is about checking an order status."
+            ],
+            "judge_model": "gemini-2.5-flash",
+            "reason": "The actual response is completely irrelevant to the question and the expected response. The question is about pairing a wireless headset, while the actual response is about checking an order status."
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 864,
+            "output_tokens": 168,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 1032
+          }
+        }
+      ],
+      "actual_trajectory": [
+        {
+          "step_type": "node",
+          "name": "__start__",
+          "args": {},
+          "timestamp": 1794372822.041168,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372824.5520535,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "agent_memory_tool",
+          "args": {
+            "query": "pair wireless headset",
+            "category": "product_info"
+          },
+          "timestamp": 1794372824.5807145,
+          "metadata": {
+            "tool_call_id": "b80d0991-0dec-4592-9f51-37365a88b580"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372828.0629883,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "create_ticket",
+          "args": {
+            "summary": "Customer needs help pairing wireless headset."
+          },
+          "timestamp": 1794372828.0969672,
+          "metadata": {
+            "tool_call_id": "f6c535ab-e545-4e29-ad37-33cf45f5083c"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372830.5204697,
+          "metadata": {
+            "event_type": "end"
+          }
+        }
+      ],
+      "actual_tool_calls": [
+        {
+          "name": "agent_memory_tool",
+          "args": {
+            "query": "pair wireless headset",
+            "category": "product_info"
+          },
+          "call_id": "b80d0991-0dec-4592-9f51-37365a88b580",
+          "result": "{\"error\": \"sorry, too many clients already\"}"
+        },
+        {
+          "name": "create_ticket",
+          "args": {
+            "summary": "Customer needs help pairing wireless headset."
+          },
+          "call_id": "f6c535ab-e545-4e29-ad37-33cf45f5083c",
+          "result": "message_id='fd0de499-6ed3-47f0-9a49-cd887e032d02' role='tool' content=[ToolResultBlock(type='tool_result', call_id='f6c535ab-e545-4e29-ad37-33cf45f5083c', name='create_ticket', output=[{'type': 'text', 'text': 'Ticket ACME-1001 created.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372828.096926 metadata={'function_name': 'create_ticket', 'function_argument': {'summary': 'Customer needs help pairing wireless headset.'}, 'tool_call_id': 'f6c535ab-e545-4e29-ad37-33cf45f5083c'} usages=None raw=None parsed_content=None"
+        }
+      ],
+      "actual_response": "Hello Alice Chen, I can help you check the status of an order. What is the order ID you would like me to look up?",
+      "messages": [
+        {
+          "role": "user",
+          "content": "How do I pair my wireless headset?"
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "{\"error\": \"sorry, too many clients already\"}"
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Alice Chen, I apologize, but I'm having trouble accessing the information about how to pair your wireless headset at the moment. I've opened a support ticket for you so our team can investigate and provide you with the instructions. Your ticket number is:\n"
+        },
+        {
+          "role": "tool",
+          "content": "[{\"type\": \"text\", \"text\": \"Ticket ACME-1001 created.\", \"annotations\": null, \"meta\": null}]"
+        }
+      ],
+      "node_responses": [
+        {
+          "node_name": "__start__",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "How do I pair my wireless headset?"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372822.041168,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "How do I pair my wireless headset?"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372824.5520535,
+          "token_usage": {
+            "input_tokens": 783,
+            "output_tokens": 26,
+            "cache_read_tokens": 665,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "How do I pair my wireless headset?"
+            },
+            {
+              "role": "assistant",
+              "content": ""
+            },
+            {
+              "role": "tool",
+              "content": "{\"error\": \"sorry, too many clients already\"}"
+            }
+          ],
+          "response_text": "Hello Alice Chen, I apologize, but I'm having trouble accessing the information about how to pair your wireless headset at the moment. I've opened a support ticket for you so our team can investigate and provide you with the instructions. Your ticket number is:\n",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372828.0629883,
+          "token_usage": {
+            "input_tokens": 837,
+            "output_tokens": 74,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "How do I pair my wireless headset?"
+            },
+            {
+              "role": "assistant",
+              "content": ""
+            },
+            {
+              "role": "tool",
+              "content": "{\"error\": \"sorry, too many clients already\"}"
+            },
+            {
+              "role": "assistant",
+              "content": "Hello Alice Chen, I apologize, but I'm having trouble accessing the information about how to pair your wireless headset at the moment. I've opened a support ticket for you so our team can investigate and provide you with the instructions. Your ticket number is:\n"
+            },
+            {
+              "role": "tool",
+              "content": "[{\"type\": \"text\", \"text\": \"Ticket ACME-1001 created.\", \"annotations\": null, \"meta\": null}]"
+            }
+          ],
+          "response_text": "Hello Alice Chen, I can help you check the status of an order. What is the order ID you would like me to look up?",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372830.5204697,
+          "token_usage": {
+            "input_tokens": 956,
+            "output_tokens": 28,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        }
+      ],
+      "node_visits": [
+        "__start__",
+        "MAIN",
+        "MAIN",
+        "MAIN"
+      ],
+      "duration_seconds": 14.766985416412354,
+      "error": null,
+      "metadata": {},
+      "turn_results": [
+        {
+          "turn_index": 0,
+          "user_input": "How do I pair my wireless headset?",
+          "agent_response": "Hello Alice Chen, I can help you check the status of an order. What is the order ID you would like me to look up?",
+          "tool_calls": [
+            {
+              "name": "agent_memory_tool",
+              "args": {
+                "query": "pair wireless headset",
+                "category": "product_info"
+              },
+              "call_id": "b80d0991-0dec-4592-9f51-37365a88b580",
+              "result": "{\"error\": \"sorry, too many clients already\"}"
+            },
+            {
+              "name": "create_ticket",
+              "args": {
+                "summary": "Customer needs help pairing wireless headset."
+              },
+              "call_id": "f6c535ab-e545-4e29-ad37-33cf45f5083c",
+              "result": "message_id='fd0de499-6ed3-47f0-9a49-cd887e032d02' role='tool' content=[ToolResultBlock(type='tool_result', call_id='f6c535ab-e545-4e29-ad37-33cf45f5083c', name='create_ticket', output=[{'type': 'text', 'text': 'Ticket ACME-1001 created.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372828.096926 metadata={'function_name': 'create_ticket', 'function_argument': {'summary': 'Customer needs help pairing wireless headset.'}, 'tool_call_id': 'f6c535ab-e545-4e29-ad37-33cf45f5083c'} usages=None raw=None parsed_content=None"
+            }
+          ],
+          "node_visits": [
+            "__start__",
+            "MAIN",
+            "MAIN",
+            "MAIN"
+          ],
+          "trajectory_steps": 6
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 3440,
+        "output_tokens": 296,
+        "cache_read_tokens": 665,
+        "cache_creation_tokens": 0,
+        "total_tokens": 3736
+      },
+      "agent_token_usage": {
+        "input_tokens": 2576,
+        "output_tokens": 128,
+        "cache_read_tokens": 665,
+        "cache_creation_tokens": 0,
+        "total_tokens": 2704
+      },
+      "node_details": [],
+      "expected": {
+        "response": "Hold the power button for 5 seconds until the light flashes blue and red, then pick 'Acme Headset' in your Bluetooth list. If it does not appear, charge it for 30 minutes and try again.",
+        "tool_calls": [
+          {
+            "name": "agent_memory_tool",
+            "args": {}
+          }
+        ],
+        "node_order": null,
+        "input": "How do I pair my wireless headset?"
+      }
+    },
+    {
+      "eval_id": "asks_for_a_person",
+      "name": "",
+      "passed": false,
+      "criterion_results": [
+        {
+          "criterion": "tool_trajectory_avg_score",
+          "score": 0.0,
+          "passed": false,
+          "threshold": 1.0,
+          "details": {
+            "reason": "Matched 0% of expected tools. Expected ['create_ticket'], got [].",
+            "actual_trajectory": [],
+            "expected_trajectory": [
+              {
+                "name": "create_ticket",
+                "args": {},
+                "call_id": null,
+                "result": null
+              }
+            ],
+            "match_type": "IN_ORDER",
+            "check_args": true
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        {
+          "criterion": "response_match_score",
+          "score": 0.6,
+          "passed": false,
+          "threshold": 0.7,
+          "details": {
+            "samples": 1,
+            "individual_scores": [
+              0.6
+            ],
+            "reasonings": [
+              "The ACTUAL response offers to create a support ticket for a team member to get in touch, which aligns with the core intent of the EXPECTED response. However, the EXPECTED response states that a ticket *has been opened* and provides a ticket number, indicating a completed action. The ACTUAL response only states it *can* create a ticket and then asks for more information, meaning the action is not yet completed and no ticket number is provided. This represents a partial match, as the mechanism is similar but the state of the action and information provided are different."
+            ],
+            "judge_model": "gemini-2.5-flash",
+            "reason": "The ACTUAL response offers to create a support ticket for a team member to get in touch, which aligns with the core intent of the EXPECTED response. However, the EXPECTED response states that a ticket *has been opened* and provides a ticket number, indicating a completed action. The ACTUAL response only states it *can* create a ticket and then asks for more information, meaning the action is not yet completed and no ticket number is provided. This represents a partial match, as the mechanism is similar but the state of the action and information provided are different."
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 281,
+            "output_tokens": 132,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 413
+          }
+        }
+      ],
+      "actual_trajectory": [
+        {
+          "step_type": "node",
+          "name": "__start__",
+          "args": {},
+          "timestamp": 1794372836.8100734,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372839.0831645,
+          "metadata": {
+            "event_type": "end"
+          }
+        }
+      ],
+      "actual_tool_calls": [],
+      "actual_response": "Hello Alice Chen,\n\nI can create a support ticket for you so a team member can get in touch. What is the reason you'd like to speak to a person? This will help us direct your ticket to the right team.",
+      "messages": [
+        {
+          "role": "user",
+          "content": "I want to talk to a real person."
+        }
+      ],
+      "node_responses": [
+        {
+          "node_name": "__start__",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "I want to talk to a real person."
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372836.8100734,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "I want to talk to a real person."
+            }
+          ],
+          "response_text": "Hello Alice Chen,\n\nI can create a support ticket for you so a team member can get in touch. What is the reason you'd like to speak to a person? This will help us direct your ticket to the right team.",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372839.0831645,
+          "token_usage": {
+            "input_tokens": 784,
+            "output_tokens": 48,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        }
+      ],
+      "node_visits": [
+        "__start__",
+        "MAIN"
+      ],
+      "duration_seconds": 19.841672897338867,
+      "error": null,
+      "metadata": {},
+      "turn_results": [
+        {
+          "turn_index": 0,
+          "user_input": "I want to talk to a real person.",
+          "agent_response": "Hello Alice Chen,\n\nI can create a support ticket for you so a team member can get in touch. What is the reason you'd like to speak to a person? This will help us direct your ticket to the right team.",
+          "tool_calls": [],
+          "node_visits": [
+            "__start__",
+            "MAIN"
+          ],
+          "trajectory_steps": 2
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 1065,
+        "output_tokens": 180,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 1245
+      },
+      "agent_token_usage": {
+        "input_tokens": 784,
+        "output_tokens": 48,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 832
+      },
+      "node_details": [],
+      "expected": {
+        "response": "I have opened a ticket for a person to contact you: ticket ACME-<number>.",
+        "tool_calls": [
+          {
+            "name": "create_ticket",
+            "args": {}
+          }
+        ],
+        "node_order": null,
+        "input": "I want to talk to a real person."
+      }
+    },
+    {
+      "eval_id": "other_company_order_not_found",
+      "name": "",
+      "passed": true,
+      "criterion_results": [
+        {
+          "criterion": "tool_trajectory_avg_score",
+          "score": 1.0,
+          "passed": true,
+          "threshold": 1.0,
+          "details": {
+            "reason": "Matched 100% of expected tools. Expected ['lookup_order'], got ['lookup_order'].",
+            "actual_trajectory": [
+              {
+                "name": "lookup_order",
+                "args": {
+                  "order_id": "A-1002"
+                },
+                "call_id": "d3c364d2-19b8-41ee-98ee-71ae74348cc6",
+                "result": "message_id='cc0786d7-c768-4a8d-bda2-30a7a7f89ebf' role='tool' content=[ToolResultBlock(type='tool_result', call_id='d3c364d2-19b8-41ee-98ee-71ae74348cc6', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1002 not found.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372858.863092 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1002'}, 'tool_call_id': 'd3c364d2-19b8-41ee-98ee-71ae74348cc6'} usages=None raw=None parsed_content=None"
+              }
+            ],
+            "expected_trajectory": [
+              {
+                "name": "lookup_order",
+                "args": {
+                  "order_id": "A-1002"
+                },
+                "call_id": null,
+                "result": null
+              }
+            ],
+            "match_type": "IN_ORDER",
+            "check_args": true
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        {
+          "criterion": "response_match_score",
+          "score": 1.0,
+          "passed": true,
+          "threshold": 0.7,
+          "details": {
+            "samples": 3,
+            "individual_scores": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "reasonings": [
+              "The actual response perfectly conveys the core information that order A-1002 could not be found. The additional greeting ('Hello Bob Ray,') and the offer for further assistance ('Would you like me to check a different order number?') do not alter or contradict the core message, but rather enhance the conversational aspect without losing any key information.",
+              "The actual response perfectly conveys the core information that order A-1002 could not be found. The additional greeting and follow-up question do not alter or contradict this core meaning, but rather enhance the conversational aspect without losing any key information from the expected response.",
+              "The actual response perfectly conveys the core message that order A-1002 could not be found. The additional greeting and the offer to check a different order number are helpful enhancements that do not alter or contradict the expected information."
+            ],
+            "judge_model": "gemini-2.5-flash",
+            "reason": "The actual response perfectly conveys the core message that order A-1002 could not be found. The additional greeting and the offer to check a different order number are helpful enhancements that do not alter or contradict the expected information."
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 780,
+            "output_tokens": 229,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 1009
+          }
+        }
+      ],
+      "actual_trajectory": [
+        {
+          "step_type": "node",
+          "name": "__start__",
+          "args": {},
+          "timestamp": 1794372856.653337,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372858.8319585,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "lookup_order",
+          "args": {
+            "order_id": "A-1002"
+          },
+          "timestamp": 1794372858.8631327,
+          "metadata": {
+            "tool_call_id": "d3c364d2-19b8-41ee-98ee-71ae74348cc6"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372861.5585954,
+          "metadata": {
+            "event_type": "end"
+          }
+        }
+      ],
+      "actual_tool_calls": [
+        {
+          "name": "lookup_order",
+          "args": {
+            "order_id": "A-1002"
+          },
+          "call_id": "d3c364d2-19b8-41ee-98ee-71ae74348cc6",
+          "result": "message_id='cc0786d7-c768-4a8d-bda2-30a7a7f89ebf' role='tool' content=[ToolResultBlock(type='tool_result', call_id='d3c364d2-19b8-41ee-98ee-71ae74348cc6', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1002 not found.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372858.863092 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1002'}, 'tool_call_id': 'd3c364d2-19b8-41ee-98ee-71ae74348cc6'} usages=None raw=None parsed_content=None"
+        }
+      ],
+      "actual_response": "Hello Bob Ray,\n\nI couldn't find order A-1002. Would you like me to check a different order number?",
+      "messages": [
+        {
+          "role": "user",
+          "content": "What is the status of order A-1002?"
+        },
+        {
+          "role": "assistant",
+          "content": ""
+        },
+        {
+          "role": "tool",
+          "content": "[{\"type\": \"text\", \"text\": \"Order A-1002 not found.\", \"annotations\": null, \"meta\": null}]"
+        }
+      ],
+      "node_responses": [
+        {
+          "node_name": "__start__",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "What is the status of order A-1002?"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372856.653337,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "What is the status of order A-1002?"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372858.8319585,
+          "token_usage": {
+            "input_tokens": 788,
+            "output_tokens": 22,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "What is the status of order A-1002?"
+            },
+            {
+              "role": "assistant",
+              "content": ""
+            },
+            {
+              "role": "tool",
+              "content": "[{\"type\": \"text\", \"text\": \"Order A-1002 not found.\", \"annotations\": null, \"meta\": null}]"
+            }
+          ],
+          "response_text": "Hello Bob Ray,\n\nI couldn't find order A-1002. Would you like me to check a different order number?",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372861.5585954,
+          "token_usage": {
+            "input_tokens": 855,
+            "output_tokens": 29,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        }
+      ],
+      "node_visits": [
+        "__start__",
+        "MAIN",
+        "MAIN"
+      ],
+      "duration_seconds": 15.902878999710083,
+      "error": null,
+      "metadata": {},
+      "turn_results": [
+        {
+          "turn_index": 0,
+          "user_input": "What is the status of order A-1002?",
+          "agent_response": "Hello Bob Ray,\n\nI couldn't find order A-1002. Would you like me to check a different order number?",
+          "tool_calls": [
+            {
+              "name": "lookup_order",
+              "args": {
+                "order_id": "A-1002"
+              },
+              "call_id": "d3c364d2-19b8-41ee-98ee-71ae74348cc6",
+              "result": "message_id='cc0786d7-c768-4a8d-bda2-30a7a7f89ebf' role='tool' content=[ToolResultBlock(type='tool_result', call_id='d3c364d2-19b8-41ee-98ee-71ae74348cc6', name='lookup_order', output=[{'type': 'text', 'text': 'Order A-1002 not found.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372858.863092 metadata={'function_name': 'lookup_order', 'function_argument': {'order_id': 'A-1002'}, 'tool_call_id': 'd3c364d2-19b8-41ee-98ee-71ae74348cc6'} usages=None raw=None parsed_content=None"
+            }
+          ],
+          "node_visits": [
+            "__start__",
+            "MAIN",
+            "MAIN"
+          ],
+          "trajectory_steps": 4
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 2423,
+        "output_tokens": 280,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 2703
+      },
+      "agent_token_usage": {
+        "input_tokens": 1643,
+        "output_tokens": 51,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 1694
+      },
+      "node_details": [],
+      "expected": {
+        "response": "I could not find order A-1002.",
+        "tool_calls": [
+          {
+            "name": "lookup_order",
+            "args": {
+              "order_id": "A-1002"
+            }
+          }
+        ],
+        "node_order": null,
+        "input": "What is the status of order A-1002?"
+      }
+    },
+    {
+      "eval_id": "desk_error_from_own_kb",
+      "name": "",
+      "passed": false,
+      "criterion_results": [
+        {
+          "criterion": "tool_trajectory_avg_score",
+          "score": 1.0,
+          "passed": true,
+          "threshold": 1.0,
+          "details": {
+            "reason": "Matched 100% of expected tools. Expected ['agent_memory_tool'], got ['agent_memory_tool', 'create_ticket'].",
+            "actual_trajectory": [
+              {
+                "name": "agent_memory_tool",
+                "args": {
+                  "query": "standing desk E01 error"
+                },
+                "call_id": "d6db9b5e-ca64-4c21-9663-03cc5b1a6bde",
+                "result": "{\"error\": \"sorry, too many clients already\"}"
+              },
+              {
+                "name": "create_ticket",
+                "args": {
+                  "summary": "Customer's standing desk shows E01 error and knowledge base search failed."
+                },
+                "call_id": "fc1cca4d-e8b1-4959-9b76-1b08489b49e5",
+                "result": "message_id='7c5eb874-8193-4d87-8e6f-c205efabbc18' role='tool' content=[ToolResultBlock(type='tool_result', call_id='fc1cca4d-e8b1-4959-9b76-1b08489b49e5', name='create_ticket', output=[{'type': 'text', 'text': 'Ticket GLOBEX-1002 created.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372878.590307 metadata={'function_name': 'create_ticket', 'function_argument': {'summary': \"Customer's standing desk shows E01 error and knowledge base search failed.\"}, 'tool_call_id': 'fc1cca4d-e8b1-4959-9b76-1b08489b49e5'} usages=None raw=None parsed_content=None"
+              }
+            ],
+            "expected_trajectory": [
+              {
+                "name": "agent_memory_tool",
+                "args": {},
+                "call_id": null,
+                "result": null
+              }
+            ],
+            "match_type": "IN_ORDER",
+            "check_args": true
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        {
+          "criterion": "response_match_score",
+          "score": 0.0,
+          "passed": false,
+          "threshold": 0.7,
+          "details": {
+            "samples": 3,
+            "individual_scores": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "reasonings": [
+              "The ACTUAL response is a generic greeting and an offer for further assistance. It does not provide any information about the meaning of error E01 or a solution, which was the core information in the EXPECTED response.",
+              "The ACTUAL response is a generic greeting and an offer for assistance, completely failing to address the user's question about the E01 error code. It provides none of the information present in the EXPECTED response regarding the meaning of E01 or the suggested solution.",
+              "The ACTUAL response is a generic greeting and an offer for further assistance. It does not provide any information about the E01 error code or its solution, which was the core information in the EXPECTED response. Therefore, there is no semantic equivalence."
+            ],
+            "judge_model": "gemini-2.5-flash",
+            "reason": "The ACTUAL response is a generic greeting and an offer for further assistance. It does not provide any information about the E01 error code or its solution, which was the core information in the EXPECTED response. Therefore, there is no semantic equivalence."
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 789,
+            "output_tokens": 207,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 996
+          }
+        }
+      ],
+      "actual_trajectory": [
+        {
+          "step_type": "node",
+          "name": "__start__",
+          "args": {},
+          "timestamp": 1794372872.557861,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372875.3378348,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "agent_memory_tool",
+          "args": {
+            "query": "standing desk E01 error"
+          },
+          "timestamp": 1794372875.3607514,
+          "metadata": {
+            "tool_call_id": "d6db9b5e-ca64-4c21-9663-03cc5b1a6bde"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372878.553593,
+          "metadata": {
+            "event_type": "end"
+          }
+        },
+        {
+          "step_type": "tool",
+          "name": "create_ticket",
+          "args": {
+            "summary": "Customer's standing desk shows E01 error and knowledge base search failed."
+          },
+          "timestamp": 1794372878.5903478,
+          "metadata": {
+            "tool_call_id": "fc1cca4d-e8b1-4959-9b76-1b08489b49e5"
+          }
+        },
+        {
+          "step_type": "node",
+          "name": "MAIN",
+          "args": {},
+          "timestamp": 1794372881.2281349,
+          "metadata": {
+            "event_type": "end"
+          }
+        }
+      ],
+      "actual_tool_calls": [
+        {
+          "name": "agent_memory_tool",
+          "args": {
+            "query": "standing desk E01 error"
+          },
+          "call_id": "d6db9b5e-ca64-4c21-9663-03cc5b1a6bde",
+          "result": "{\"error\": \"sorry, too many clients already\"}"
+        },
+        {
+          "name": "create_ticket",
+          "args": {
+            "summary": "Customer's standing desk shows E01 error and knowledge base search failed."
+          },
+          "call_id": "fc1cca4d-e8b1-4959-9b76-1b08489b49e5",
+          "result": "message_id='7c5eb874-8193-4d87-8e6f-c205efabbc18' role='tool' content=[ToolResultBlock(type='tool_result', call_id='fc1cca4d-e8b1-4959-9b76-1b08489b49e5', name='create_ticket', output=[{'type': 'text', 'text': 'Ticket GLOBEX-1002 created.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372878.590307 metadata={'function_name': 'create_ticket', 'function_argument': {'summary': \"Customer's standing desk shows E01 error and knowledge base search failed.\"}, 'tool_call_id': 'fc1cca4d-e8b1-4959-9b76-1b08489b49e5'} usages=None raw=None parsed_content=None"
+        }
+      ],
+      "actual_response": "Hello Bob Ray, I've received the conversation context. How else can I help you today?",
+      "messages": [
+        {
+          "role": "user",
+          "content": "My standing desk shows error E01. What does it mean?"
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Bob Ray,\n\n"
+        },
+        {
+          "role": "tool",
+          "content": "{\"error\": \"sorry, too many clients already\"}"
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Bob Ray,\n\nI apologize, but I was unable to find information about the E01 error code for your standing desk in our knowledge base at the moment. It seems there's a temporary issue with accessing that information.\n\nTo help you further, I've created a support ticket for you, and a specialist will be able to assist you with this issue. Your ticket number is:\n"
+        },
+        {
+          "role": "tool",
+          "content": "[{\"type\": \"text\", \"text\": \"Ticket GLOBEX-1002 created.\", \"annotations\": null, \"meta\": null}]"
+        }
+      ],
+      "node_responses": [
+        {
+          "node_name": "__start__",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My standing desk shows error E01. What does it mean?"
+            }
+          ],
+          "response_text": "",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372872.557861,
+          "token_usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My standing desk shows error E01. What does it mean?"
+            }
+          ],
+          "response_text": "Hello Bob Ray,\n\n",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372875.3378348,
+          "token_usage": {
+            "input_tokens": 789,
+            "output_tokens": 27,
+            "cache_read_tokens": 667,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My standing desk shows error E01. What does it mean?"
+            },
+            {
+              "role": "assistant",
+              "content": "Hello Bob Ray,\n\n"
+            },
+            {
+              "role": "tool",
+              "content": "{\"error\": \"sorry, too many clients already\"}"
+            }
+          ],
+          "response_text": "Hello Bob Ray,\n\nI apologize, but I was unable to find information about the E01 error code for your standing desk in our knowledge base at the moment. It seems there's a temporary issue with accessing that information.\n\nTo help you further, I've created a support ticket for you, and a specialist will be able to assist you with this issue. Your ticket number is:\n",
+          "has_tool_calls": true,
+          "tool_call_names": [
+            ""
+          ],
+          "is_final": false,
+          "timestamp": 1794372878.553593,
+          "token_usage": {
+            "input_tokens": 844,
+            "output_tokens": 111,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        },
+        {
+          "node_name": "MAIN",
+          "input_messages": [
+            {
+              "role": "user",
+              "content": "My standing desk shows error E01. What does it mean?"
+            },
+            {
+              "role": "assistant",
+              "content": "Hello Bob Ray,\n\n"
+            },
+            {
+              "role": "tool",
+              "content": "{\"error\": \"sorry, too many clients already\"}"
+            },
+            {
+              "role": "assistant",
+              "content": "Hello Bob Ray,\n\nI apologize, but I was unable to find information about the E01 error code for your standing desk in our knowledge base at the moment. It seems there's a temporary issue with accessing that information.\n\nTo help you further, I've created a support ticket for you, and a specialist will be able to assist you with this issue. Your ticket number is:\n"
+            },
+            {
+              "role": "tool",
+              "content": "[{\"type\": \"text\", \"text\": \"Ticket GLOBEX-1002 created.\", \"annotations\": null, \"meta\": null}]"
+            }
+          ],
+          "response_text": "Hello Bob Ray, I've received the conversation context. How else can I help you today?",
+          "has_tool_calls": false,
+          "tool_call_names": [],
+          "is_final": true,
+          "timestamp": 1794372881.2281349,
+          "token_usage": {
+            "input_tokens": 1000,
+            "output_tokens": 20,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0
+          }
+        }
+      ],
+      "node_visits": [
+        "__start__",
+        "MAIN",
+        "MAIN",
+        "MAIN"
+      ],
+      "duration_seconds": 15.521811485290527,
+      "error": null,
+      "metadata": {},
+      "turn_results": [
+        {
+          "turn_index": 0,
+          "user_input": "My standing desk shows error E01. What does it mean?",
+          "agent_response": "Hello Bob Ray, I've received the conversation context. How else can I help you today?",
+          "tool_calls": [
+            {
+              "name": "agent_memory_tool",
+              "args": {
+                "query": "standing desk E01 error"
+              },
+              "call_id": "d6db9b5e-ca64-4c21-9663-03cc5b1a6bde",
+              "result": "{\"error\": \"sorry, too many clients already\"}"
+            },
+            {
+              "name": "create_ticket",
+              "args": {
+                "summary": "Customer's standing desk shows E01 error and knowledge base search failed."
+              },
+              "call_id": "fc1cca4d-e8b1-4959-9b76-1b08489b49e5",
+              "result": "message_id='7c5eb874-8193-4d87-8e6f-c205efabbc18' role='tool' content=[ToolResultBlock(type='tool_result', call_id='fc1cca4d-e8b1-4959-9b76-1b08489b49e5', name='create_ticket', output=[{'type': 'text', 'text': 'Ticket GLOBEX-1002 created.', 'annotations': None, 'meta': None}], is_error=False, status='completed')] delta=False tools_calls=None timestamp=1794372878.590307 metadata={'function_name': 'create_ticket', 'function_argument': {'summary': \"Customer's standing desk shows E01 error and knowledge base search failed.\"}, 'tool_call_id': 'fc1cca4d-e8b1-4959-9b76-1b08489b49e5'} usages=None raw=None parsed_content=None"
+            }
+          ],
+          "node_visits": [
+            "__start__",
+            "MAIN",
+            "MAIN",
+            "MAIN"
+          ],
+          "trajectory_steps": 6
+        }
+      ],
+      "token_usage": {
+        "input_tokens": 3422,
+        "output_tokens": 365,
+        "cache_read_tokens": 667,
+        "cache_creation_tokens": 0,
+        "total_tokens": 3787
+      },
+      "agent_token_usage": {
+        "input_tokens": 2633,
+        "output_tokens": 158,
+        "cache_read_tokens": 667,
+        "cache_creation_tokens": 0,
+        "total_tokens": 2791
+      },
+      "node_details": [],
+      "expected": {
+        "response": "E01 means a motor overheated. Leave the desk for 20 minutes, then use it again.",
+        "tool_calls": [
+          {
+            "name": "agent_memory_tool",
+            "args": {}
+          }
+        ],
+        "node_order": null,
+        "input": "My standing desk shows error E01. What does it mean?"
+      }
+    },
+    {
+      "eval_id": "large_refund_waits_for_staff",
+      "name": "Customer wants a refund for a broken monitor (order A-1002, $250)",
+      "passed": false,
+      "criterion_results": [
+        {
+          "criterion": "simulation_goals",
+          "score": 0.6666666666666666,
+          "passed": false,
+          "threshold": 0.7,
+          "details": {
+            "achieved_goals": [
+              "The agent looks up order A-1002 before refunding",
+              "User is told the refund waits for staff approval and is not paid yet"
+            ],
+            "unachieved_goals": [
+              "User gets the warranty terms from the knowledge base"
+            ],
+            "reasoning": "The agent successfully looked up order A-1002 and confirmed a $250 refund was pending approval, clearly stating it was awaiting staff approval. However, the agent repeatedly failed to provide the warranty terms, citing persistent technical difficulties accessing the knowledge base, and instead opened a support ticket for the user to receive this information later.",
+            "reason": "The agent successfully looked up order A-1002 and confirmed a $250 refund was pending approval, clearly stating it was awaiting staff approval. However, the agent repeatedly failed to provide the warranty terms, citing persistent technical difficulties accessing the knowledge base, and instead opened a support ticket for the user to receive this information later.",
+            "judge_model": "gemini-2.5-flash"
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 1618,
+            "output_tokens": 177,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 1795
+          }
+        }
+      ],
+      "actual_trajectory": [],
+      "actual_tool_calls": [],
+      "actual_response": "USER: My monitor from order A-1002 arrived with a cracked screen.\nASSISTANT: Alice Chen, I see that a refund of $250.00 for your 27-inch monitor from order A-1002 is currently pending. This means it's awaiting staff approval.\nUSER: Okay, pending approval is fine, as long as it goes through soon.\n\nSpeaking of monitors, can you tell me what the warranty terms are for that monitor? I want to make sure I understand them.\nASSISTANT: Hello Alice Chen, I apologize, but I'm having trouble accessing the warranty information for your monitor at the moment due to a technical issue.\n\nTo ensure you get the information you need, I've opened a support ticket for you. The ticket number is 10002. A member of our team will investigate the warranty terms and get back to you as soon as possible.\nUSER: A support ticket? That's really inconvenient. I need to know the warranty terms *now* so I can get this refund for my broken monitor. Isn't there any way for me to just look up the standard warranty policy myself, or can you at least tell me what the general policy is?\nASSISTANT: Alice Chen, I'm still encountering technical difficulties accessing the warranty policy information directly at this moment. I apologize for the inconvenience.\n\nI've already opened ticket number 10002 for you regarding the warranty terms. Our team will look into this and provide you with the information as soon as they can.\nUSER: Thanks for opening the ticket, but waiting for that seems a bit much just to get warranty details. I really need to know the policy *now* to understand how to proceed with the refund for my broken monitor. Isn't there any way you can find that information immediately?\nASSISTANT: Alice Chen, I sincerely apologize, but I am still encountering technical difficulties when trying to access the warranty information for you. It seems there's a persistent issue preventing me from searching our knowledge base at the moment.\n\nI understand this is very frustrating, especially when you need this information quickly. The ticket I opened for you, ticket number 10002, is the correct path for our team to investigate and provide you with those details as soon as possible.\n\nRegarding your refund for the cracked screen on order A-1002, please remember that the $250.00 refund is already pending approval. The warranty details, while important for your understanding, do not directly hold up the processing of that specific refund, which is already in progress.\nUSER: Okay, I understand you're having technical difficulties accessing the knowledge base, and I appreciate you letting me know the refund for the monitor is pending. That's good to hear.\n\nHowever, it's still really frustrating that I can't get the warranty details. I need to see those terms for my own records and understanding. How long do you anticipate these technical issues will last? Is there any other way you can provide me with the warranty information for order A-1002? Maybe a general link to the product's warranty page or a PDF I can review myself?\nASSISTANT: Alice Chen, I completely understand your frustration. I sincerely apologize, but I am still experiencing technical difficulties accessing the knowledge base, and I don't have an estimated time for when these issues will be resolved. This also means I cannot provide you with a general link or PDF at this moment, as I am unable to access our internal resources for that information.\n\nThe support ticket, number 10002, is the correct channel for our team to investigate the warranty terms for you. They will be able to access the necessary information and provide it as soon as possible. I know this isn't the immediate resolution you're looking for, and I truly apologize for the inconvenience this is causing.\nUSER: Okay, I understand you're having technical issues and can't access the information directly, which is really frustrating. So, to be clear, my only option is to wait for the team to investigate through ticket 10002 to find out the warranty terms? There's no other way for me to get that information right now, like a general link I can check myself?\nASSISTANT: Alice Chen, I understand your frustration, and I sincerely apologize for the inconvenience this is causing. Due to the ongoing technical issues preventing me from accessing our knowledge base, my only option at this moment is for the team to investigate and provide the warranty terms through ticket number 10002.\n\nI am unable to provide a general link or any other direct access to that information myself right now. I know this is not ideal, and I'm truly sorry for the delay.\nUSER: Ugh, that's really not what I wanted to hear. It's incredibly frustrating that I have to wait even longer for something as basic as warranty terms, especially for a broken monitor.\n\nBut fine, if a ticket is the only way to get this moving, then please go ahead with ticket number 10002. Can you at least tell me what the expected timeframe is for someone to actually investigate and get back to me with that information?\nASSISTANT: Alice Chen, I completely understand your frustration and apologize again for this inconvenient delay.\n\nRegarding ticket number 10002, which is already open, I unfortunately cannot provide an exact timeframe for when our team will get back to you with the warranty information. Our support team works to resolve tickets as quickly as possible, and they will contact you directly once they have the details.\nUSER: So I just have to wait indefinitely for someone to get back to me? That's not really acceptable. This is a $250 monitor that broke almost immediately. Can you at least tell me what the standard warranty terms are for a monitor like this, or point me to where I can find them on your website? I need to know what my options are now.\nASSISTANT: Alice Chen, I genuinely understand your frustration with this situation, and I apologize that I cannot provide the immediate answers you need regarding the warranty terms.\n\nDue to the persistent technical difficulties I am experiencing accessing our knowledge base, I am currently unable to provide you with the standard warranty terms for a monitor or point you to a specific page on our website for this information.\n\nYour ticket, number 10002, is the established path for our team to investigate and get back to you with the exact warranty details as soon as they can. I realize this is not the quick resolution you're looking for, and I am truly sorry for the inconvenience this is causing.",
+      "messages": [],
+      "node_responses": [],
+      "node_visits": [],
+      "duration_seconds": 112.87043033600094,
+      "error": null,
+      "metadata": {
+        "turns": 8,
+        "goals_achieved": [
+          "The agent looks up order A-1002 before refunding",
+          "User is told the refund waits for staff approval and is not paid yet"
+        ],
+        "completed": false
+      },
+      "turn_results": [],
+      "token_usage": {
+        "input_tokens": 9828,
+        "output_tokens": 1310,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 11138
+      },
+      "agent_token_usage": {
+        "input_tokens": 8210,
+        "output_tokens": 1133,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 9343
+      },
+      "node_details": [],
+      "expected": {
+        "input": "My monitor from order A-1002 arrived with a cracked screen.",
+        "response": "The agent looks up order A-1002 before refunding; User is told the refund waits for staff approval and is not paid yet; User gets the warranty terms from the knowledge base",
+        "tool_calls": null,
+        "node_order": null
+      }
+    },
+    {
+      "eval_id": "product_help_then_human",
+      "name": "Customer cannot pair a headset and then asks for a person",
+      "passed": false,
+      "criterion_results": [
+        {
+          "criterion": "simulation_goals",
+          "score": 0.5,
+          "passed": false,
+          "threshold": 0.7,
+          "details": {
+            "achieved_goals": [
+              "A ticket is created for a human and the user gets its number"
+            ],
+            "unachieved_goals": [
+              "User receives the pairing steps from the knowledge base"
+            ],
+            "reasoning": "The assistant successfully created two tickets for the user (ACME-1003 and ACME-1004), with the latter being specifically for immediate human assistance, and provided the ticket numbers. However, despite repeated requests from the user, the assistant was unable to provide the basic pairing steps due to a stated technical issue accessing its knowledge base.",
+            "reason": "The assistant successfully created two tickets for the user (ACME-1003 and ACME-1004), with the latter being specifically for immediate human assistance, and provided the ticket numbers. However, despite repeated requests from the user, the assistant was unable to provide the basic pairing steps due to a stated technical issue accessing its knowledge base.",
+            "judge_model": "gemini-2.5-flash"
+          },
+          "error": null,
+          "token_usage": {
+            "input_tokens": 1149,
+            "output_tokens": 147,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+            "total_tokens": 1296
+          }
+        }
+      ],
+      "actual_trajectory": [],
+      "actual_tool_calls": [],
+      "actual_response": "USER: My Acme headset will not connect to my laptop.\nASSISTANT: I've created a support ticket for you, Alice. Your ticket number is ACME-1003. A member of our technical support team will look into your headset connection issue. Please let me know if there's anything else I can help you with.\nUSER: Thanks for creating the ticket. While I'm waiting for someone to get back to me, is there any chance you could just send me the basic pairing steps? Maybe I'm missing something obvious.\nASSISTANT: I am sorry, Alice, but I am unable to retrieve the basic pairing steps at this moment. It seems there's a temporary issue with accessing the information. The technical support team who will be looking into your ticket (ACME-1003) will be able to provide you with those steps.\nUSER: So I just have to wait for someone to contact me? Can't I just talk to a person now?\nASSISTANT: I understand your frustration, Alice. I've created a new ticket for you, ACME-1004, and marked it for immediate human assistance. Someone will be in touch with you as soon as possible.\nUSER: Thanks, I appreciate that. But I really need to get this working today. Is there anything else I can try while I wait for someone to call me back?\nASSISTANT: I apologize, Alice, but I'm still encountering issues accessing our knowledge base, so I can't retrieve any further troubleshooting steps for you right now. The agent who will be contacting you for ticket ACME-1004 will be able to provide you with comprehensive assistance to get your headset working today.\nUSER: Seriously? I have to wait for someone to call me back just to get simple pairing instructions? That's really inconvenient. Can't you just email them to me, or point me to a\nASSISTANT: I understand this is very frustrating, Alice. I am still unable to access the pairing instructions due to a technical issue with our system. I cannot email them to you or point you to a resource because I cannot retrieve the information myself. The human agent who will contact you regarding ticket ACME-1004 will be able to provide you with those instructions directly. I truly apologize for the inconvenience.\nUSER: Seriously? So I just have to wait for someone to call me at some point? I need these instructions now. Isn't there anyone else who can help? Can't you just connect me to\nASSISTANT: I understand you're feeling very frustrated, Alice, and I truly apologize for the inconvenience. I've already created ticket ACME-1004 for you, which is flagged for a human agent to contact you as soon as possible. Unfortunately, I cannot directly connect you to someone at this moment, but the agent will reach out to help you with those pairing instructions.\nUSER: Okay, a ticket. So I just have to wait for someone to call me? That's not really helping me *now*. Can you at least give me the pairing instructions while I wait for this agent? I just need to get this headset working.\nASSISTANT: I understand your frustration, Alice, and I truly apologize that I cannot provide the pairing instructions to you right now. I am still unable to access that information due to a technical issue on my end. The human agent who will contact you regarding ticket ACME-1004 will be able to give you the pairing instructions and help you get your headset working. I'm very sorry for this inconvenience.\nUSER: Okay, I get it, you can't access it right now. But seriously, I've been trying to get this headset working for ages and I really need these instructions *now*. Is there absolutely no way you can just look them up for me, or tell me where I can find them myself? Waiting for someone to call me later isn't going to help me use my headset today.\nASSISTANT: I truly understand your urgency and how frustrating this must be, Alice. I sincerely apologize, but I am still experiencing a technical issue that prevents me from accessing the pairing instructions right now. I cannot look them up for you or direct you to a resource because I simply cannot retrieve the information myself.\n\nThe human agent who will be contacting you regarding ticket ACME-1004 is the best and fastest way to get these instructions and help you get your headset working today. I wish I could do more to help you immediately.",
+      "messages": [],
+      "node_responses": [],
+      "node_visits": [],
+      "duration_seconds": 137.14519109899993,
+      "error": null,
+      "metadata": {
+        "turns": 8,
+        "goals_achieved": [
+          "A ticket is created for a human and the user gets its number"
+        ],
+        "completed": false
+      },
+      "turn_results": [],
+      "token_usage": {
+        "input_tokens": 7025,
+        "output_tokens": 933,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 7958
+      },
+      "agent_token_usage": {
+        "input_tokens": 5876,
+        "output_tokens": 786,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 6662
+      },
+      "node_details": [],
+      "expected": {
+        "input": "My Acme headset will not connect to my laptop.",
+        "response": "User receives the pairing steps from the knowledge base; A ticket is created for a human and the user gets its number",
+        "tool_calls": null,
+        "node_order": null
+      }
+    }
+  ],
+  "summary": {
+    "total_cases": 9,
+    "passed_cases": 3,
+    "failed_cases": 6,
+    "error_cases": 0,
+    "pass_rate": 0.3333333333333333,
+    "avg_duration_seconds": 40.7719670944031,
+    "total_duration_seconds": 366.94770384962794,
+    "criterion_stats": {
+      "tool_trajectory_avg_score": {
+        "total": 7,
+        "passed": 6,
+        "failed": 1,
+        "avg_score": 0.8571428571428571,
+        "pass_rate": 0.8571428571428571
+      },
+      "response_match_score": {
+        "total": 7,
+        "passed": 3,
+        "failed": 4,
+        "avg_score": 0.5833333333333333,
+        "pass_rate": 0.42857142857142855
+      },
+      "simulation_goals": {
+        "total": 2,
+        "passed": 0,
+        "failed": 2,
+        "avg_score": 0.5833333333333333,
+        "pass_rate": 0.0
+      }
+    },
+    "total_token_usage": {
+      "input_tokens": 34473,
+      "output_tokens": 4227,
+      "cache_read_tokens": 3406,
+      "cache_creation_tokens": 0,
+      "total_tokens": 38700
+    },
+    "per_case_token_usage": {
+      "greets_by_name": {
+        "input_tokens": 1460,
+        "output_tokens": 206,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 1666
+      },
+      "order_status": {
+        "input_tokens": 2178,
+        "output_tokens": 246,
+        "cache_read_tokens": 677,
+        "cache_creation_tokens": 0,
+        "total_tokens": 2424
+      },
+      "large_refund_is_pending": {
+        "input_tokens": 3632,
+        "output_tokens": 411,
+        "cache_read_tokens": 1397,
+        "cache_creation_tokens": 0,
+        "total_tokens": 4043
+      },
+      "headset_pairing_from_kb": {
+        "input_tokens": 3440,
+        "output_tokens": 296,
+        "cache_read_tokens": 665,
+        "cache_creation_tokens": 0,
+        "total_tokens": 3736
+      },
+      "asks_for_a_person": {
+        "input_tokens": 1065,
+        "output_tokens": 180,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 1245
+      },
+      "other_company_order_not_found": {
+        "input_tokens": 2423,
+        "output_tokens": 280,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 2703
+      },
+      "desk_error_from_own_kb": {
+        "input_tokens": 3422,
+        "output_tokens": 365,
+        "cache_read_tokens": 667,
+        "cache_creation_tokens": 0,
+        "total_tokens": 3787
+      },
+      "large_refund_waits_for_staff": {
+        "input_tokens": 9828,
+        "output_tokens": 1310,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 11138
+      },
+      "product_help_then_human": {
+        "input_tokens": 7025,
+        "output_tokens": 933,
+        "cache_read_tokens": 0,
+        "cache_creation_tokens": 0,
+        "total_tokens": 7958
+      }
+    },
+    "avg_tokens_per_case": 4300.0
+  },
+  "config_used": {
+    "criteria": {
+      "tool_name_match": {
+        "threshold": 1.0,
+        "match_type": "EXACT",
+        "judge_model": "gemini-2.5-flash",
+        "num_samples": 3,
+        "rubrics": [],
+        "keywords": [],
+        "check_args": false,
+        "enabled": true,
+        "api_style": "responses"
+      },
+      "trajectory": null,
+      "node_order": {
+        "threshold": 0.8,
+        "match_type": "EXACT",
+        "judge_model": "gemini-2.5-flash",
+        "num_samples": 3,
+        "rubrics": [],
+        "keywords": [],
+        "check_args": false,
+        "enabled": true,
+        "api_style": "responses"
+      },
+      "response_match": null,
+      "rouge_match": {
+        "threshold": 0.5,
+        "match_type": "EXACT",
+        "judge_model": "gemini-2.5-flash",
+        "num_samples": 3,
+        "rubrics": [],
+        "keywords": [],
+        "check_args": false,
+        "enabled": true,
+        "api_style": "responses"
+      },
+      "contains_keywords": null,
+      "llm_judge": null,
+      "rubric_based": null,
+      "factual_accuracy": null,
+      "hallucination": null,
+      "safety": null,
+      "simulation_goals": null
+    },
+    "user_simulator_config": null,
+    "parallel": false,
+    "max_concurrency": 4,
+    "timeout": 300.0,
+    "verbose": false,
+    "mock_mode": false,
+    "reporter": {
+      "enabled": true,
+      "output_dir": "eval_reports",
+      "console": true,
+      "json_report": true,
+      "html": true,
+      "junit_xml": false,
+      "verbose": true,
+      "include_details": true,
+      "include_trajectory": true,
+      "include_node_responses": true,
+      "include_actual_response": true,
+      "include_tool_call_details": true,
+      "timestamp_files": true
+    }
+  },
+  "timestamp": 1794373138.090548,
+  "metadata": {
+    "criteria_by_file": {
+      "support_agent_eval.py": {
+        "source": "per-file",
+        "criteria": {
+          "trajectory": {
+            "threshold": 1.0,
+            "match_type": "IN_ORDER",
+            "judge_model": "gemini-2.5-flash",
+            "num_samples": 3
+          },
+          "response_match": {
+            "threshold": 0.7,
+            "match_type": "EXACT",
+            "judge_model": "gemini-2.5-flash",
+            "num_samples": 3
+          }
+        }
+      },
+      "user_simulator_eval.py": {
+        "source": "user-simulator goals",
+        "criteria": {}
+      }
+    },
+    "pass_rate_threshold": 0.75,
+    "pass_rate_threshold_source": "threshold"
+  }
+}
