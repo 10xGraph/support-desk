@@ -19,9 +19,8 @@ credentials*.json
 .npmrc
 !.env.example
 
-# Local data written by the dev server and 10xgraph eval
+# Local data written by the dev server (eval_reports/ is kept in git)
 uploads/
-eval_reports/
 *.sqlite3
 *.db
 

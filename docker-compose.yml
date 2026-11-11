@@ -25,6 +25,7 @@ x-api-environment: &api-environment
   BROKER_URL: amqp://tenxgraph:${RABBITMQ_PASSWORD:?set RABBITMQ_PASSWORD in .env}@rabbitmq:5672/
   DEMO_MCP_URL: http://demo-server:8100/mcp/
   PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:6006
+  PHOENIX_API_KEY: ${PHOENIX_ADMIN_SECRET}
   # Metrics only ("metrics" in 10xgraph.json; Prometheus accepts no traces). AI traces go to
   # Phoenix. OTEL_ENABLED is the older path that also sends request traces over gRPC to
   # OTEL_EXPORTER_OTLP_ENDPOINT, so it stays off and that variable stays empty.
@@ -216,11 +217,13 @@ services:
     image: arizephoenix/phoenix:version-21.0.0
     environment:
       PHOENIX_WORKING_DIR: /mnt/data
-      # Phoenix turns login on by itself when it listens on all addresses (it must, for the API
-      # container to reach it), and then rejects the API's traces with 401. Off for local
-      # testing; the port is bound to 127.0.0.1. With login on, create a system API key in
-      # Phoenix and set PHOENIX_API_KEY for the API instead.
-      PHOENIX_ENABLE_AUTH: 'false'
+      # Login on. PHOENIX_SECRET signs sessions; PHOENIX_ADMIN_SECRET is a bearer token the API
+      # sends as PHOENIX_API_KEY, so traces are accepted without a key made in the UI.
+      # First login: admin@localhost / PHOENIX_ADMIN_PASSWORD.
+      PHOENIX_ENABLE_AUTH: 'true'
+      PHOENIX_SECRET: ${PHOENIX_SECRET:?run deploy/scripts/make_secret.py}
+      PHOENIX_ADMIN_SECRET: ${PHOENIX_ADMIN_SECRET:?run deploy/scripts/make_secret.py}
+      PHOENIX_DEFAULT_ADMIN_INITIAL_PASSWORD: ${PHOENIX_ADMIN_PASSWORD:?set PHOENIX_ADMIN_PASSWORD in .env}
     ports:
       - '127.0.0.1:6006:6006'
     volumes:

@@ -29,9 +29,9 @@ Local testing setup: there is no reverse proxy yet, and every port binds to `127
 
    ```bash
    cp .env.example .env
-   .venv/bin/python deploy/scripts/make_secret.py   # writes JWT_SECRET_KEY and JWT_ALGORITHM
+   .venv/bin/python deploy/scripts/make_secret.py   # writes JWT_SECRET_KEY, PHOENIX_SECRET, PHOENIX_ADMIN_SECRET
    # then set GOOGLE_API_KEY, POSTGRES_PASSWORD, RABBITMQ_PASSWORD, GRAFANA_ADMIN_PASSWORD,
-   # PGADMIN_PASSWORD,
+   # PGADMIN_PASSWORD, PHOENIX_ADMIN_PASSWORD,
    # and the same passwords in DATABASE_URL and BROKER_URL
    ```
 
@@ -99,11 +99,11 @@ docker compose logs -f worker
 
 | What | URL | Login |
 |---|---|---|
-| Phoenix (AI traces), project `support-desk` | http://127.0.0.1:6006 | none (auth off locally) |
+| Phoenix (AI traces), project `support-desk` | http://127.0.0.1:6006 | `admin@localhost` / `PHOENIX_ADMIN_PASSWORD` |
 | Grafana, dashboard "10xGraph" | http://127.0.0.1:3001 | `admin` / `GRAFANA_ADMIN_PASSWORD` |
 | RabbitMQ management, queue `tenxgraph.events.demo` | http://127.0.0.1:15672 | `tenxgraph` / `RABBITMQ_PASSWORD` |
 | pgAdmin, server `support-desk` | http://127.0.0.1:5050 | `PGADMIN_EMAIL` / `PGADMIN_PASSWORD`; then `POSTGRES_PASSWORD` for the database |
-| Prometheus | http://127.0.0.1:9090 | none; type `{job="10xgraph-api"}` in the Graph tab to list API metrics |
+| Prometheus | http://127.0.0.1:9090 | none; type `{job="support-agent"}` in the Graph tab to list API metrics |
 
 Audit events and JSON application logs go to the API container's stdout:
 `docker compose logs api | grep tenxgraph_api.audit`.
