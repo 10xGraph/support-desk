@@ -62,7 +62,7 @@ line: the company comes from the signed-in user's token, never from the conversa
 ## Quick start
 
 Requirements:
-- Docker with Compose and the buildx plugin;
+- Docker with Compose;
 - [uv](https://docs.astral.sh/uv/) for the helper scripts and evals;
 - a Google AI API key for Gemini and the embeddings.
 
@@ -94,12 +94,6 @@ Requirements:
 
    Postgres starts, `seed` loads the knowledge base and exits, then the API starts.
    `curl http://localhost:8000/ping` answers when it is ready.
-
-> This app needs `10xgraph` and `10xgraph-api` 1.0.0rc6 or later. Until that is on PyPI, the
-> `Dockerfile` installs both from sibling checkouts (`../agentflow`, `../agentflow-api`), and the
-> local environment needs them installed editable from there too. Once it is out, delete the
-> `COPY --from=core` and `COPY --from=api` lines in the `Dockerfile` and the
-> `additional_contexts` in `docker-compose.yml`.
 
 ## Try it
 

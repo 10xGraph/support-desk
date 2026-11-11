@@ -41,6 +41,6 @@ One support agent for two demo companies (`acme`, `globex`, JWT claim `org_id`).
   a plain FastAPI app with REST for people and MCP for the agent. The business rules live
   there (refunds up to $100 issued at once, larger ones pending until staff approve, one
   refund per order).
-- Core and API are installed editable from `../agentflow` and `../agentflow-api`.
+- Core and API come from PyPI (`10xgraph`, `10xgraph-api` >= 1.0.0rc6).
 
 Keep it this small. Do not add agents, nodes or rules to the graph; put rules in demo_server.

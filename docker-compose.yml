@@ -8,12 +8,8 @@
 #   docker compose up --build
 #   docker compose down -v      # delete every volume (threads, orders, traces, metrics)
 
-# The API image installs 10xgraph and 10xgraph-api from the sibling checkouts (see Dockerfile).
 x-api-build: &api-build
   context: .
-  additional_contexts:
-    core: ../agentflow
-    api: ../agentflow-api
 
 # Inside the Docker network the services use their service names, not the localhost URLs in
 # .env (those are for scripts and evals run on the host).
