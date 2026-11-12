@@ -32,6 +32,9 @@ unlimited on purpose). The load generator runs on the same machine, in the same 
 - No Python, curl or jq needed on the host: the load generator, the summary and the log counting
   run in containers.
 - Internet access for the first build (images, PyPI, npm).
+- No free host ports needed except two: the benchmark publishes only Phoenix on
+  127.0.0.1:16006 and Grafana on 127.0.0.1:13001 (`BENCH_PHOENIX_PORT`, `BENCH_GRAFANA_PORT` to
+  move them). The API, databases and the mock LLM stay inside the Docker network.
 
 ## Steps
 

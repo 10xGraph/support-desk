@@ -17,12 +17,38 @@ services:
       # Production trusts only these Host headers (comma separated; the port is ignored). The
       # load generator calls http://api:8000, so "api" must be in the list.
       ALLOWED_HOST: api,localhost,127.0.0.1
+    # The load generator calls the API inside the compose network, so no host port is
+    # published: nothing else on the machine (port 8000 and the rest) can clash.
+    ports: !reset []
 
   # Starts with a plain `up`, no --profile llmock needed.
   llmock:
     profiles: !reset []
+    ports: !reset []
+
+  demo-server:
+    ports: !reset []
+
+  redis:
+    ports: !reset []
+
+  rabbitmq:
+    ports: !reset []
+
+  prometheus:
+    ports: !reset []
+
+  # The two UIs worth watching during a run, on ports you can move.
+  phoenix:
+    ports: !override
+      - '127.0.0.1:${BENCH_PHOENIX_PORT:-16006}:6006'
+
+  grafana:
+    ports: !override
+      - '127.0.0.1:${BENCH_GRAFANA_PORT:-13001}:3000'
 
   postgres:
+    ports: !reset []
     cpus: !reset null
     mem_limit: !reset null
     command:
