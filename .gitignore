@@ -44,3 +44,4 @@ htmlcov/
 .idea/
 .vscode/
 .DS_Store
+benchmark_results/

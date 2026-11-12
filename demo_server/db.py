@@ -11,7 +11,8 @@ pool: asyncpg.Pool | None = None
 
 async def connect() -> None:
     global pool  # noqa: PLW0603
-    pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], min_size=1, max_size=5)
+    max_size = int(os.getenv("DEMO_PG_POOL_MAX", "5"))
+    pool = await asyncpg.create_pool(os.environ["DATABASE_URL"], min_size=1, max_size=max_size)
 
 
 async def init_db() -> None:

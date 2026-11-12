@@ -28,6 +28,11 @@ x-api-environment: &api-environment
   OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://prometheus:9090/api/v1/otlp/v1/metrics
   OTEL_EXPORTER_OTLP_ENDPOINT: ''
   OTEL_ENABLED: 'false'
+  # A streamed LLM reply that sends nothing for this many seconds fails (retried when nothing
+  # reached the user yet). Unset, a stalled model holds the run until runs.timeout (300 s).
+  TENXGRAPH_LLM_STREAM_IDLE_TIMEOUT: ${TENXGRAPH_LLM_STREAM_IDLE_TIMEOUT:-30}
+  # Load testing: set to http://llmock:8001 (with --profile llmock) to use the mock LLM.
+  LLM_MOCK_URL: ${LLM_MOCK_URL:-}
 
 # Read-only filesystem, no Linux capabilities, no setuid escalation.
 x-hardening: &hardening
@@ -46,7 +51,15 @@ services:
     pull_policy: build
     env_file:
       - .env
-    environment: *api-environment
+    environment:
+      <<: *api-environment
+      # Gunicorn reads WEB_CONCURRENCY (the Dockerfile defaults it to 2). Each worker opens two
+      # Postgres pools (checkpointer, store) of up to PG_POOL_MAX connections.
+      WEB_CONCURRENCY: ${API_WORKERS:-2}
+      PG_POOL_MAX: ${PG_POOL_MAX:-20}
+    # Sized like a small production box; raise through .env.
+    cpus: ${API_CPUS:-2}
+    mem_limit: ${API_MEMORY:-1g}
     # ORIGINS and ALLOWED_HOST come from .env. Production refuses to start while either is
     # missing or a wildcard.
     ports:
@@ -139,6 +152,28 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  # Mock LLM for load tests (profile "llmock"): LLM_MOCK_URL=http://llmock:8001 docker compose
+  # --profile llmock up -d --build. Answers in Anthropic format; see deploy/llmock/.llmockrc.json.
+  llmock:
+    build: ./deploy/llmock
+    image: support-desk-llmock:latest
+    pull_policy: build
+    profiles: [ 'llmock' ]
+    ports:
+      - '127.0.0.1:8001:8001'
+    healthcheck:
+      test: [ 'CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:8001/ping' ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    <<: *hardening
+    # llmock writes its request log under ~/.local/state and npx its cache under ~/.npm.
+    tmpfs:
+      - /tmp
+      - /home/node/.local/state:uid=1000,gid=1000
+      - /home/node/.npm:uid=1000,gid=1000
+
   # The companies' orders, refunds and tickets (schema "demo"); REST for staff, MCP for the agent.
   demo-server:
     build: ./demo_server
@@ -148,6 +183,7 @@ services:
       DATABASE_URL: postgresql://tenxgraph:${POSTGRES_PASSWORD}@postgres:5432/tenxgraph
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:?set JWT_SECRET_KEY in .env}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      DEMO_PG_POOL_MAX: ${DEMO_PG_POOL_MAX:-20}
     ports:
       - '127.0.0.1:8100:8100'
     restart: unless-stopped
@@ -162,6 +198,21 @@ services:
       POSTGRES_USER: tenxgraph
       POSTGRES_DB: tenxgraph
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Sized like a small database box: 2 CPUs, 2 GB, tuned to match. Settings apply on restart.
+    cpus: ${POSTGRES_CPUS:-2}
+    mem_limit: ${POSTGRES_MEMORY:-2g}
+    command:
+      - postgres
+      - -c
+      - max_connections=200
+      - -c
+      - shared_buffers=512MB
+      - -c
+      - effective_cache_size=1536MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=128MB
     ports:
       - '127.0.0.1:5433:5432'
     volumes:

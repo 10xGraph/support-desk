@@ -1,0 +1,70 @@
+# Benchmark override: finds the breaking point of the API container (2 CPU / 4 GB by default).
+# Everything else runs without limits. Use it through deploy/scripts/benchmark.sh, or:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.benchmark.yml up -d --build --wait
+#
+# Needs Docker Compose 2.24 or newer (the !reset tag). See docs/benchmark.md.
+
+services:
+  api:
+    cpus: ${API_CPUS:-2}
+    mem_limit: ${API_MEMORY:-4g}
+    environment:
+      # WEB_CONCURRENCY comes from API_WORKERS in docker-compose.yml (default 2).
+      PG_POOL_MAX: ${PG_POOL_MAX:-20}
+      LLM_MOCK_URL: http://llmock:8001
+      TENXGRAPH_LLM_STREAM_IDLE_TIMEOUT: 30
+      # Production trusts only these Host headers (comma separated; the port is ignored). The
+      # load generator calls http://api:8000, so "api" must be in the list.
+      ALLOWED_HOST: api,localhost,127.0.0.1
+
+  # Starts with a plain `up`, no --profile llmock needed.
+  llmock:
+    profiles: !reset []
+
+  postgres:
+    cpus: !reset null
+    mem_limit: !reset null
+    command:
+      - postgres
+      - -c
+      - max_connections=400
+      - -c
+      - shared_buffers=512MB
+      - -c
+      - effective_cache_size=1536MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=128MB
+
+  # Load generator. Same image as the API (python, aiohttp, pyjwt, python-dotenv). JWT_SECRET_KEY
+  # comes from .env. Run: docker compose -f ... run --rm loadgen python deploy/scripts/load_test.py
+  loadgen:
+    image: support-desk-api:latest
+    pull_policy: never
+    profiles: [ 'bench' ]
+    env_file:
+      - .env
+    # The results folder is a bind mount: write as the host user (benchmark.sh sets these).
+    user: '${BENCH_UID:-0}:${BENCH_GID:-0}'
+    ulimits:
+      nofile: 65536
+    volumes:
+      - ./deploy/scripts:/app/deploy/scripts:ro
+      - ./benchmark_results:/results
+
+  # py-spy in the API's process namespace: pid 1 there is the gunicorn master; --subprocesses
+  # adds its workers.
+  pyspy:
+    build:
+      context: ./deploy/benchmark
+      dockerfile: Dockerfile.pyspy
+    image: support-desk-pyspy:latest
+    profiles: [ 'bench' ]
+    pid: 'service:api'
+    cap_add:
+      - SYS_PTRACE
+    user: '0:0'
+    volumes:
+      - ./benchmark_results:/results

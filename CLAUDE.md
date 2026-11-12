@@ -43,4 +43,6 @@ One support agent for two demo companies (`acme`, `globex`, JWT claim `org_id`).
   refund per order).
 - Core and API come from PyPI (`10xgraph`, `10xgraph-api` >= 1.0.0rc6).
 
+- Load testing: `LLM_MOCK_URL` swaps Gemini for the LLMock server in `deploy/llmock/` (`--profile llmock`); `deploy/scripts/load_test.py` drives the API (README, "Load testing with a mock LLM").
+
 Keep it this small. Do not add agents, nodes or rules to the graph; put rules in demo_server.

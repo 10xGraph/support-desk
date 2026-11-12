@@ -1,0 +1,4 @@
+# py-spy sampling profiler for the benchmark (docker-compose.benchmark.yml, service pyspy).
+FROM python:3.13-slim
+RUN pip install --no-cache-dir py-spy==0.4.3
+ENTRYPOINT ["py-spy"]

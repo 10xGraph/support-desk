@@ -39,7 +39,8 @@ KB_CATEGORY = "kb"
 # Postgres connections per pool, in every process that loads this module (API workers, task
 # workers, the seed step, evals). asyncpg's default keeps 10 open per pool even when idle, which
 # fills Postgres' 100 connections once the API, a worker and an eval run side by side.
-PG_POOL_CONFIG = {"min_size": 1, "max_size": 5}
+# PG_POOL_MAX raises the cap (the load-test stack sets it).
+PG_POOL_CONFIG = {"min_size": 1, "max_size": int(os.getenv("PG_POOL_MAX", "5"))}
 
 # Threads: Postgres keeps every thread, Redis caches the hot ones.
 checkpointer = PgCheckpointer(
@@ -66,10 +67,24 @@ events = RabbitMQPublisher({"url": os.getenv("BROKER_URL")})
 container = InjectQ.get_instance()
 
 
+# Load testing only: with LLM_MOCK_URL set (deploy/llmock, `docker compose --profile llmock`),
+# the agent talks to an LLMock server in Anthropic format instead of Gemini. Tools, storage,
+# publisher and tracing stay real. Reasoning is off: the mock ignores it.
+LLM_MOCK_URL = os.getenv("LLM_MOCK_URL")
+if LLM_MOCK_URL:
+    llm_settings = {
+        "model": "claude-mock",
+        "provider": "anthropic",
+        "base_url": LLM_MOCK_URL,
+        "api_key": "mock",
+        "reasoning_config": None,
+    }
+else:
+    llm_settings = {"model": "gemini-2.5-flash", "provider": "google"}
+
 react_agent = ReactAgent(
     state=SupportState(),
-    model="gemini-2.5-flash",
-    provider="google",
+    **llm_settings,
     system_prompt=[
         {
             "role": "system",
@@ -104,8 +119,19 @@ react_agent = ReactAgent(
     publisher=events,
 )
 
-app = react_agent.compile(
-    checkpointer=checkpointer,
-    store=store,
-    callback_manager=callback_manager,
-)
+if os.getenv("LOAD_TEST_AGENT") == "1" and not LLM_MOCK_URL:
+    # Load and security testing: same API, auth and storage, no LLM (graph/load_test_agent.py).
+    # LLM_MOCK_URL wins: it runs the real agent against the mock LLM.
+    from graph.load_test_agent import build_load_test_graph
+
+    app = build_load_test_graph(publisher=events, container=container).compile(
+        checkpointer=checkpointer,
+        store=store,
+        callback_manager=callback_manager,
+    )
+else:
+    app = react_agent.compile(
+        checkpointer=checkpointer,
+        store=store,
+        callback_manager=callback_manager,
+    )

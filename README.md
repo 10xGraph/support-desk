@@ -167,6 +167,49 @@ docker compose logs -f worker
 
 Run exactly one scheduler.
 
+## Load testing with a mock LLM
+
+For load tests, an [LLMock](https://github.com/piyook/llm-mock) server can stand in for Gemini. The
+real agent, MCP tools (`demo_server`), checkpointer, publisher, Phoenix tracing and callbacks all
+run; only the model is mocked (Anthropic format, 300 to 800 ms per reply). A message that says
+"order A-1001" (acme) or "order G-2001" (globex) makes the mock call `lookup_order`, then answer
+with fixed text; any other message gets a short lorem reply. The knowledge-base tool (Google
+embeddings) is never called. Rules are in `deploy/llmock/.llmockrc.json`.
+
+```bash
+LLM_MOCK_URL=http://llmock:8001 docker compose --profile llmock up -d --build
+uv run python deploy/scripts/load_test.py --users 50 --requests-per-user 4 --concurrency 20
+uv run python deploy/scripts/load_test.py --stream   # same, through /v1/graph/stream
+```
+
+The script prints totals, errors by status, req/s and p50/p90/p99/max latency, and exits 1 when
+more than 1% of the requests fail. Unset `LLM_MOCK_URL` and recreate the `api` service to go back
+to Gemini.
+
+Chaos testing: LLMock can fail some model calls, to see how the agent and API cope (retries, error
+responses, cut streams). `--chaos KIND[:STATUS]` turns it on for the run and off again afterwards
+(also on Ctrl-C). `KIND` is `http`, `stream-error`, `stream-drop` or `stream-stall`; `STATUS` is the
+HTTP error (400 to 599, default 500; 429, 503 and 529 carry `retry-after: 1`). `--chaos-frequency N`
+fails 1 in N calls (default 10), `--chaos-mode` is `random` (default) or `every`, `--llmock-url`
+is the admin address (default `http://127.0.0.1:8001`). It works with `--ramp` too. The script
+prints how many failures llmock injected in how many LLM calls. The admin API is on in
+`deploy/llmock/.llmockrc.json` and reachable only from this machine and the compose network.
+
+```bash
+uv run python deploy/scripts/load_test.py --chaos http:529 --chaos-frequency 5 --users 30
+uv run python deploy/scripts/load_test.py --stream --chaos stream-error --ramp 25,50 --step-seconds 60
+```
+
+To find the breaking point of the API container on a separate machine (2 CPU / 4 GB, one command, one
+results archive), see [docs/benchmark.md](docs/benchmark.md).
+
+Sizing: the stack models a small production box. Override these in `.env` (defaults in brackets):
+`API_CPUS` [2], `API_MEMORY` [1g], `API_WORKERS` [2 gunicorn workers], `POSTGRES_CPUS` [2],
+`POSTGRES_MEMORY` [2g], `PG_POOL_MAX` [20, Postgres pool cap per pool in each API worker; two pools
+per worker; 5 outside the API container], `DEMO_PG_POOL_MAX` [20, demo_server pool cap]. Postgres
+runs with `max_connections=200`; keep workers x 2 x `PG_POOL_MAX` plus the task worker, seed and
+demo_server well under it.
+
 ## Observability
 
 | What | URL | Login |

@@ -1,0 +1,30 @@
+{
+  "defaultModel": "claude",
+  "models": {
+    "claude": {
+      "name": "claude",
+      "model": "claude-mock",
+      "endpoint": "v1/messages",
+      "responseType": "lorem",
+      "maxLoremParas": 3,
+      "validateRequests": false,
+      "logRequests": false,
+      "debug": false,
+      "responseDelay": { "min": 300, "max": 800 },
+      "chaos": { "enabled": false, "frequency": 10, "mode": "random", "status": 500, "kind": "http" },
+      "responseRules": [
+        { "match": "Order A-1001", "text": "Your order A-1001, the Wireless headset, was delivered." },
+        { "match": "Order G-2001", "text": "Your order G-2001, the Mechanical keyboard, was delivered." },
+        {
+          "match": "order A-1001",
+          "content": [{ "type": "tool_use", "name": "lookup_order", "input": { "order_id": "A-1001" } }]
+        },
+        {
+          "match": "order G-2001",
+          "content": [{ "type": "tool_use", "name": "lookup_order", "input": { "order_id": "G-2001" } }]
+        }
+      ]
+    }
+  },
+  "server": { "port": 8001, "host": "0.0.0.0", "admin": true }
+}

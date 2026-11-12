@@ -65,3 +65,6 @@ evals/
 .claude/
 .agents/
 .github/
+
+# Benchmark output
+benchmark_results/
